@@ -50,7 +50,7 @@ C.Armor = {
         { ID = "back",     Label = "RÜCKEN",   Side = "right", Icon = "fa-suitcase",      Hint = "Rucksack / Jetpack" },
         { ID = "hip",      Label = "HOSE",     Side = "right", Icon = "fa-socks",         Hint = "Beinpanzer / Hose" },
         -- Rang- und Ausrüstungsteile (nur Optik, 501st)
-        { ID = "pauldron", Label = "PAULDRON", Side = "left",  Icon = "fa-shield",        Hint = "Pauldron" },
+        { ID = "pauldron", Label = "PAULDRON", Side = "left",  Icon = "fa-shield",        Hint = "Pauldron (ab First Corporal)" },
         { ID = "strap",    Label = "GURT",     Side = "left",  Icon = "fa-ribbon",        Hint = "Rang-Gurt (Specialist / Corporal / Chief Corporal)" },
         { ID = "kama",     Label = "KAMA",     Side = "right", Icon = "fa-vest-patches",  Hint = "Kama (ab Sergeant)" },
         { ID = "holster",  Label = "HOLSTER",  Side = "right", Icon = "fa-gun",           Hint = "Holster (dual / rechts)" },
@@ -175,6 +175,7 @@ C.Armor = {
     -- Rang-Teile: welche Ränge (Ende des Job-Commands) sie tragen dürfen.
     RankGear = {
         Units = { "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }, -- nur 501st
+        PauldronRanks = { "fcpl", "sgt", "fsgt", "sgm", "lt", "1lt", "cpt" }, -- ab First Corporal
         KamaRanks = { "sgt", "fsgt", "sgm", "lt", "1lt", "cpt" },     -- ab Sergeant
         SpecialistStrapRanks = { "spc" },
         CorporalStrapRanks = { "cpl" },
@@ -409,7 +410,8 @@ local function gear(id, data)
 end
 
 gear("armor_rank_pauldron", {
-    Name = "Pauldron", Description = "Stoff-Pauldron über der Schulter.",
+    Name = "Pauldron", Description = "Stoff-Pauldron über der Schulter (ab First Corporal).",
+    AllowedJobs = rankJobs(RG.PauldronRanks or {}, unpack(RANK_UNITS)),
     Slot = "pauldron", Icon = "fa-shield", Model = P .. "pauldron/pauldron_clone_standart.mdl",
 })
 
@@ -698,6 +700,20 @@ function INV.ResolveArmorBodygroups(ent)
             end
             out[key] = { index = index, on = tonumber(values.On) or 0, off = tonumber(values.Off) or 0,
                 slot = group.Slot, items = items, requires = group.Requires }
+        end
+    end
+
+    -- Tell the admin which configured bodygroups this model is missing.
+    if SERVER then
+        local missing = {}
+        for _, key in ipairs(keys) do
+            if not out[key] then missing[#missing + 1] = key end
+        end
+        if #missing > 0 then
+            local present = {}
+            for i = 0, #names do if names[i] then present[#present + 1] = "[" .. i .. "] " .. names[i] end end
+            MsgC(Color(252, 178, 73), "[GRN Inventory] ", color_white, model .. ": Bodygroup nicht gefunden für "
+                .. table.concat(missing, ", ") .. ". Vorhanden: " .. table.concat(present, ", ") .. "\n")
         end
     end
 
