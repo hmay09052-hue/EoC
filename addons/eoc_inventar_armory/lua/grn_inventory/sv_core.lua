@@ -1636,3 +1636,28 @@ concommand.Add("grn_inv_give", function(executor, _, args)
     if reason then msg = msg .. " " .. reason end
     if IsValid(executor) then notify(executor, msg) else print("[GRN Inventory] " .. msg) end
 end)
+
+-- Lists the bodygroups of a player model (needed to link armor slots to
+-- bodygroups). Usage: grn_armor_bodygroups [name]  (other players: superadmin)
+concommand.Add("grn_armor_bodygroups", function(executor, _, args)
+    local target = IsValid(executor) and executor or nil
+    local search = string.lower(table.concat(args or {}, " "))
+    if search ~= "" and (not IsValid(executor) or executor:IsSuperAdmin()) then
+        target = nil
+        for _, ply in ipairs(player.GetAll()) do
+            if string.find(string.lower(ply:Nick()), search, 1, true) then target = ply break end
+        end
+    end
+
+    local function out(line)
+        if IsValid(executor) then executor:PrintMessage(HUD_PRINTCONSOLE, line) else print(line) end
+    end
+
+    if not IsValid(target) then out("[GRN Inventory] Kein Spieler gefunden.") return end
+    local job = RPExtraTeams and RPExtraTeams[target:Team()] or nil
+    out("[GRN Inventory] " .. target:Nick() .. " | Job: " .. tostring(istable(job) and job.command or "?"))
+    out("Model: " .. tostring(target:GetModel()) .. " | Skin: " .. tostring(target:GetSkin()))
+    for i = 0, target:GetNumBodyGroups() - 1 do
+        out(string.format("  [%d] %s = %d  (Werte 0-%d)", i, tostring(target:GetBodygroupName(i)), target:GetBodygroup(i), math.max(0, target:GetBodygroupCount(i) - 1)))
+    end
+end)
