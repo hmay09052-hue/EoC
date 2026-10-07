@@ -123,7 +123,6 @@ local HELMET_ACC = { "armor_acc_macrobinoculars", "armor_acc_rangefinder", "armo
 -- tragen darf (Freigabe in grn_inventory/sh_armor.lua, C.Armor.RankGear).
 local RANK_GEAR = {
     "armor_rank_pauldron", "armor_rank_kama",
-    "armor_rank_strap_spc", "armor_rank_strap_cpl", "armor_rank_strap_cpl_sidebag", "armor_rank_strap_ccpl",
     "armor_holster_dual", "armor_holster_right",
 }
 for _, unit in ipairs({ "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }) do

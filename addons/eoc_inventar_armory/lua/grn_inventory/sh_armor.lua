@@ -51,7 +51,6 @@ C.Armor = {
         { ID = "hip",      Label = "HOSE",     Side = "right", Icon = "fa-socks",         Hint = "Beinpanzer / Hose" },
         -- Rang- und Ausrüstungsteile (nur Optik, 501st)
         { ID = "pauldron", Label = "PAULDRON", Side = "left",  Icon = "fa-shield",        Hint = "Pauldron (ab First Corporal)" },
-        { ID = "strap",    Label = "GURT",     Side = "left",  Icon = "fa-ribbon",        Hint = "Rang-Gurt (Specialist / Corporal / Chief Corporal)" },
         { ID = "kama",     Label = "KAMA",     Side = "right", Icon = "fa-vest-patches",  Hint = "Kama (ab Sergeant)" },
         { ID = "holster",  Label = "HOLSTER",  Side = "right", Icon = "fa-gun",           Hint = "Holster (dual / rechts)" },
     },
@@ -98,11 +97,10 @@ C.Armor = {
             rangefinder     = { Items = { "armor_acc_rangefinder" },     Requires = "head", Names = { "rangefinder", "entfernungsmesser" } },
             sunvisor        = { Items = { "armor_acc_sunvisor" },        Requires = "head", Names = { "sunvisor", "visor", "sonnenblende" } },
 
-            -- Rang- und Ausrüstungsteile. Strap und Holster sind je EINE Bodygroup,
+            -- Rang- und Ausrüstungsteile. Holster ist EINE Bodygroup,
             -- das Item bestimmt den Wert (PlayerBodygroups).
             pauldron = { Slot = "pauldron", Names = { "pauldron" } },
             kama     = { Slot = "kama",     Names = { "kama", "karma" } },
-            strap    = { Slot = "strap",    Names = { "strap", "straps", "gurt" } },
             holster  = { Slot = "holster",  Names = { "holster", "holsters" } },
         },
 
@@ -124,7 +122,6 @@ C.Armor = {
                     sunvisor        = { On = 0, Off = 1 },
                     pauldron = { On = 1, Off = 0 },
                     kama     = { On = 1, Off = 0 },
-                    strap    = { On = 3, Off = 0 }, -- 1 Chief Corporal, 2 Corporal Sidebag, 3 Corporal, 4 Specialist
                     holster  = { On = 2, Off = 0 }, -- 1 dual, 2 rechts
                 },
             },
@@ -160,7 +157,6 @@ C.Armor = {
         head     = { Bone = "ValveBiped.Bip01_Head1",     Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
         accessory = { Bone = "ValveBiped.Bip01_Head1",    Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
         pauldron = { Bone = "ValveBiped.Bip01_L_UpperArm", Radius = 11, Dir = Vector(0.5, 1, 0.3) },
-        strap    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 15, Dir = Vector(1, 0.2, 0.1) },
         kama     = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 17, Dir = Vector(-1, 0.4, 0.05) },
         holster  = { Bone = "ValveBiped.Bip01_R_Thigh",   Radius = 11, Dir = Vector(0.4, -1, 0.1) },
         chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
@@ -173,9 +169,6 @@ C.Armor = {
         Units = { "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }, -- nur 501st
         PauldronRanks = { "fcpl", "sgt", "fsgt", "sgm", "lt", "1lt", "cpt" }, -- ab First Corporal
         KamaRanks = { "sgt", "fsgt", "sgm", "lt", "1lt", "cpt" },     -- ab Sergeant
-        SpecialistStrapRanks = { "spc" },
-        CorporalStrapRanks = { "cpl" },
-        ChiefCorporalStrapRanks = { "ccpl" },
     },
 
     -- Job-Bindung pro Einheit: Präfixe der DarkRP-Job-Commands. Ein Eintrag
@@ -417,29 +410,9 @@ gear("armor_rank_kama", {
     AllowedJobs = rankJobs(RG.KamaRanks or {}, unpack(RANK_UNITS)),
 })
 
-gear("armor_rank_strap_spc", {
-    Name = "Specialist-Strap", Description = "Rang-Gurt der Specialists.",
-    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 4 },
-    AllowedJobs = rankJobs(RG.SpecialistStrapRanks or {}, unpack(RANK_UNITS)),
-})
 
-gear("armor_rank_strap_cpl", {
-    Name = "Corporal-Strap", Description = "Rang-Gurt der Corporals.",
-    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 3 },
-    AllowedJobs = rankJobs(RG.CorporalStrapRanks or {}, unpack(RANK_UNITS)),
-})
 
-gear("armor_rank_strap_cpl_sidebag", {
-    Name = "Corporal-Sidebag-Strap", Description = "Rang-Gurt der Corporals mit Seitentasche.",
-    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 2 },
-    AllowedJobs = rankJobs(RG.CorporalStrapRanks or {}, unpack(RANK_UNITS)),
-})
 
-gear("armor_rank_strap_ccpl", {
-    Name = "Chief-Corporal-Strap", Description = "Rang-Gurt der Chief Corporals.",
-    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 1 },
-    AllowedJobs = rankJobs(RG.ChiefCorporalStrapRanks or {}, unpack(RANK_UNITS)),
-})
 
 gear("armor_holster_dual", {
     Name = "Holster (Dual)", Description = "Zwei Pistolenholster.",
