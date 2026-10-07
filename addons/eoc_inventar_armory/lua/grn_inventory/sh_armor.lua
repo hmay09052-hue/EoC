@@ -54,7 +54,6 @@ C.Armor = {
         { ID = "strap",    Label = "GURT",     Side = "left",  Icon = "fa-ribbon",        Hint = "Rang-Gurt (Specialist / Corporal / Chief Corporal)" },
         { ID = "kama",     Label = "KAMA",     Side = "right", Icon = "fa-vest-patches",  Hint = "Kama (ab Sergeant)" },
         { ID = "holster",  Label = "HOLSTER",  Side = "right", Icon = "fa-gun",           Hint = "Holster (dual / rechts)" },
-        { ID = "ammo",     Label = "MUNITION", Side = "right", Icon = "fa-box-archive",   Hint = "Extra-Munition" },
     },
 
     -- Character preview inside the inventory.
@@ -105,7 +104,6 @@ C.Armor = {
             kama     = { Slot = "kama",     Names = { "kama", "karma" } },
             strap    = { Slot = "strap",    Names = { "strap", "straps", "gurt" } },
             holster  = { Slot = "holster",  Names = { "holster", "holsters" } },
-            ammo     = { Slot = "ammo",     Names = { "extra munition", "extra_ammo", "extraammo", "ammo", "munition" } },
         },
 
         -- Werte pro Model-Gruppe. Match = Anfang des Model-Pfads.
@@ -128,7 +126,6 @@ C.Armor = {
                     kama     = { On = 1, Off = 0 },
                     strap    = { On = 3, Off = 0 }, -- 1 Chief Corporal, 2 Corporal Sidebag, 3 Corporal, 4 Specialist
                     holster  = { On = 2, Off = 0 }, -- 1 dual, 2 rechts
-                    ammo     = { On = 1, Off = 0 },
                 },
             },
             {
@@ -166,7 +163,6 @@ C.Armor = {
         strap    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 15, Dir = Vector(1, 0.2, 0.1) },
         kama     = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 17, Dir = Vector(-1, 0.4, 0.05) },
         holster  = { Bone = "ValveBiped.Bip01_R_Thigh",   Radius = 11, Dir = Vector(0.4, -1, 0.1) },
-        ammo     = { Bone = "ValveBiped.Bip01_Spine1",    Radius = 14, Dir = Vector(1, 0.3, 0.05) },
         chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
         back     = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(-1, 0.35, 0.15) },
         hip      = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 15, Dir = Vector(1, 0.3, 0.05) },
@@ -453,11 +449,6 @@ gear("armor_holster_dual", {
 gear("armor_holster_right", {
     Name = "Holster (rechts)", Description = "Pistolenholster rechts.",
     Slot = "holster", Icon = "fa-gun", PlayerBodygroups = { holster = 2 },
-})
-
-gear("armor_ammo_extra", {
-    Name = "Extra-Munition", Description = "Zusätzliche Magazintaschen.",
-    Slot = "ammo", Icon = "fa-box-archive", PlayerBodygroups = { ammo = 1 },
 })
 
 -- Chest ------------------------------------------------------
