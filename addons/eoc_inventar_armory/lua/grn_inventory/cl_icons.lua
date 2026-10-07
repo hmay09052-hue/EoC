@@ -27,6 +27,7 @@ local function cacheKey(model, opts)
     local extra = ""
     if istable(opts) then
         extra = tostring(opts.kind or "") .. tostring(opts.camDir or "") .. tostring(opts.zoom or "")
+            .. tostring(opts.bone or "") .. tostring(opts.radius or "")
     end
     return util.CRC(string.lower(model) .. "|" .. extra .. "|" .. v .. "|" .. iconSize())
 end
@@ -100,6 +101,15 @@ local function renderJob(job)
     ent:SetNoDraw(true)
     ent:SetPos(vector_origin)
     ent:SetAngles(angle_zero)
+
+    -- Armor pictures from a job model: idle pose, every armor bodygroup on.
+    if job.opts.bone then
+        local seq = ent:LookupSequence("idle_all_01")
+        if seq and seq >= 0 then ent:ResetSequence(seq) ent:SetCycle(0) end
+        for _, group in pairs(isfunction(INV.ResolveArmorBodygroups) and INV.ResolveArmorBodygroups(ent) or {}) do
+            ent:SetBodygroup(group.index, group.on)
+        end
+    end
     ent:SetupBones()
 
     local mins, maxs
@@ -108,6 +118,15 @@ local function renderJob(job)
     local center = (mins + maxs) * 0.5
     local extent = maxs - mins
     local radius = math.max(2, extent:Length() * 0.5)
+
+    if job.opts.bone then
+        local boneID = ent:LookupBone(job.opts.bone)
+        local matrix = boneID and ent:GetBoneMatrix(boneID) or nil
+        if matrix then
+            center = matrix:GetTranslation()
+            radius = math.max(2, tonumber(job.opts.radius) or 12)
+        end
+    end
 
     -- Camera direction: armor is seen from the front-right, weapons from the
     -- side perpendicular to their longest axis.
@@ -185,10 +204,17 @@ function INV.RequestItemIcon(itemID, callback)
 
     local model = INV.GetIconModel(def)
     if not model then return end
+
+    -- Armor pictured on a job model: zoom onto the body part of its slot.
+    local camera = def.Type == "armor" and C.Armor and istable(C.Armor.IconCamera) and C.Armor.IconCamera[tostring(def.Slot or "")] or nil
+    if camera and not INV.GetArmorBodygroupProfile(model) then camera = nil end
+
     return INV.RequestModelIcon(model, {
         kind = def.Type == "weapon" and "weapon" or "armor",
-        camDir = def.IconCamDir,
+        camDir = def.IconCamDir or (camera and camera.Dir),
         zoom = def.IconZoom,
+        bone = camera and camera.Bone or nil,
+        radius = camera and camera.Radius or nil,
     }, callback)
 end
 

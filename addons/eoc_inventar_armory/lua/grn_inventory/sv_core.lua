@@ -533,6 +533,25 @@ local function armorAllowedForPlayer(ply, def)
     return true
 end
 
+-- Shows / hides the armor bodygroups of the job model: worn slot = "On",
+-- empty slot = "Off" (C.Armor.Bodygroups). Models without a profile stay untouched.
+function INV.ApplyArmorBodygroups(ply, state)
+    if not IsValid(ply) or not isfunction(INV.ResolveArmorBodygroups) then return end
+    state = state or INV.GetState(ply)
+    if not state then return end
+    local groups = INV.ResolveArmorBodygroups(ply)
+    if not groups then return end
+
+    local enabled = armorConfig().Enabled ~= false
+    for _, group in pairs(groups) do
+        local worn = enabled and group.slot and state.armor and state.armor[group.slot] ~= nil
+        local value = worn and group.on or group.off
+        if value >= 0 and value < ply:GetBodygroupCount(group.index) and ply:GetBodygroup(group.index) ~= value then
+            ply:SetBodygroup(group.index, value)
+        end
+    end
+end
+
 -- Applies the summed armor stats to the player.
 -- Job PlayerSpawn functions set MaxArmor/MaxHealth to absolute values. We
 -- remember the value we wrote; if it changed in the meantime the job has
@@ -585,6 +604,7 @@ function INV.ApplyArmor(ply)
 
     ply.GRNArmorDamageReduction = totals.damageReduction
     ply:SetNW2String("GRNArmorVisual", #totals.visuals > 0 and (util.TableToJSON(totals.visuals, false) or "") or "")
+    INV.ApplyArmorBodygroups(ply, state)
 end
 
 function INV.EquipArmorUID(ply, uid, armorSlot)
@@ -1003,7 +1023,7 @@ local function payloadForPlayer(ply)
             bonusHealth = totals.health,
             damageReduction = math.Round(totals.damageReduction * 100, 1),
             carry = totals.carry,
-            visualAllowed = INV.ArmorVisualAllowed(ply:GetModel()),
+            visualAllowed = INV.ArmorVisualAllowed(ply:GetModel()) or INV.GetArmorBodygroupProfile(ply:GetModel()) ~= nil,
         },
         currentWeight = math.Round(currentWeight(state), 2),
         maxWeight = INV.GetMaxWeight(ply, state),
@@ -1534,6 +1554,10 @@ hook.Add("PlayerSpawn", "GRNInventory_Reapply", function(ply)
     timer.Simple(0.6, function()
         if IsValid(ply) and ply:Alive() then INV.ApplyArmor(ply) end
     end)
+    -- Character/model addons may set the model or bodygroups a bit later.
+    timer.Simple(2.5, function()
+        if IsValid(ply) and ply:Alive() then INV.ApplyArmorBodygroups(ply) end
+    end)
 
     -- Decide revive vs. respawn before the equipment is handed out again.
     local checkDelay = math.max(0, tonumber(respawnConfig().CheckDelay) or 0.5)
@@ -1659,5 +1683,15 @@ concommand.Add("grn_armor_bodygroups", function(executor, _, args)
     out("Model: " .. tostring(target:GetModel()) .. " | Skin: " .. tostring(target:GetSkin()))
     for i = 0, target:GetNumBodyGroups() - 1 do
         out(string.format("  [%d] %s = %d  (Werte 0-%d)", i, tostring(target:GetBodygroupName(i)), target:GetBodygroup(i), math.max(0, target:GetBodygroupCount(i) - 1)))
+    end
+
+    local profile = INV.GetArmorBodygroupProfile(target:GetModel())
+    if not profile then out("Kein Rüstungs-Profil für dieses Model (C.Armor.Bodygroups.Profiles).") return end
+    out("Rüstungs-Profil: " .. tostring(profile.Name or "?"))
+    local groups = INV.ResolveArmorBodygroups(target) or {}
+    for key in pairs(profile.Values or {}) do
+        local g = groups[key]
+        out(g and string.format("  %s -> [%d] %s (an %d / aus %d, Slot %s)", key, g.index, tostring(target:GetBodygroupName(g.index)), g.on, g.off, tostring(g.slot))
+            or ("  " .. key .. " -> NICHT GEFUNDEN (Index in der Config eintragen)"))
     end
 end)

@@ -63,7 +63,7 @@ C.Armor = {
 
     -- Rendered item icons (from the item model). Bump the version to force
     -- every client to re-render its cached icons.
-    IconVersion = 1,
+    IconVersion = 2,
     IconSize = 128,
 
     -- Also render icons for weapons that have no IconURL (uses the SWEP world model).
@@ -72,6 +72,68 @@ C.Armor = {
     -- Rüstung aus der Waffenkammer wird direkt angelegt, wenn der passende
     -- Slot noch frei ist (sonst landet sie nur im Inventar).
     AutoEquipFromArmory = true,
+
+    -- Rüstung am Spieler über die Bodygroups des Job-Models.
+    -- Angelegtes Teil = Bodygroup "On", leerer Slot = Bodygroup "Off".
+    Bodygroups = {
+        Enabled = true,
+
+        -- Welche Bodygroup zu welchem Rüstungsslot gehört. Gefunden wird sie
+        -- über ihren Namen im Model: erst exakter Name, dann Namensteil
+        -- (Groß/Klein egal). Prüfen mit dem Konsolenbefehl grn_armor_bodygroups.
+        Groups = {
+            helmet   = { Slot = "head",  Names = { "helm", "helmet", "head", "kopf" } },
+            torso    = { Slot = "chest", Names = { "oberteil", "torso", "chest", "brust", "upper" } },
+            legs     = { Slot = "hip",   Names = { "hose", "legs", "leg", "pants", "lower", "hip" } },
+            backpack = { Slot = "back",  Names = { "rucksack", "backpack", "pack", "bag" } },
+        },
+
+        -- Werte pro Model-Gruppe. Match = Anfang des Model-Pfads.
+        -- Optional pro Gruppe Index = <Nummer>, falls die Namenssuche nicht passt.
+        Profiles = {
+            {
+                Name = "501st",
+                Match = { "models/silent/501st_ph1/" },
+                Values = {
+                    helmet   = { On = 0, Off = 1 },
+                    torso    = { On = 0, Off = 2 },
+                    legs     = { On = 0, Off = 1 },
+                    backpack = { On = 1, Off = 0 },
+                },
+            },
+            {
+                Name = "Schocktruppen",
+                Match = { "models/starwars/grady/eoc/st/", "models/starwars/grady/merlin/st/" },
+                Values = {
+                    helmet   = { On = 0, Off = 1 },
+                    torso    = { On = 0, Off = 1 },
+                    legs     = { On = 0, Off = 1 },
+                    backpack = { On = 1, Off = 0 },
+                },
+            },
+        },
+    },
+
+    -- Bilder der Rüstungsteile: gerendert aus dem Job-Model (alle Teile "On"),
+    -- herangezoomt auf die Körperstelle des Slots. Radius = Bildausschnitt.
+    UnitModels = {
+        T501  = "models/silent/501st_ph1/trooper/trooper_v2/501st_trooper_v2.mdl",
+        HEAVY = "models/silent/501st_ph1/ht/ht_v1/501st_ht_v1.mdl",
+        ARF   = "models/silent/501st_ph1/arf/arf_v1/501st_arf_v1.mdl",
+        BARC  = "models/silent/501st_ph1/barc/barc_v1/501st_barc_v1.mdl",
+        AB    = "models/silent/501st_ph1/ab/ab_v1/501st_ab_v1.mdl",
+        MED   = "models/silent/501st_ph1/medic/medic_v1/501st_medic_v1.mdl",
+        ENG   = "models/silent/501st_ph1/teb/teb_v1/501st_teb_v1.mdl",
+        ST    = "models/starwars/grady/eoc/st/st_ph1_trooper.mdl",
+        AVP   = "models/silent/501st_ph1/avp/avp_v1/501st_avp_v1.mdl",
+    },
+    IconCamera = {
+        head     = { Bone = "ValveBiped.Bip01_Head1",     Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
+        shoulder = { Bone = "ValveBiped.Bip01_R_UpperArm", Radius = 10, Dir = Vector(0.6, -1, 0.25) },
+        chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
+        back     = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(-1, 0.35, 0.15) },
+        hip      = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 15, Dir = Vector(1, 0.3, 0.05) },
+    },
 
     -- Job-Bindung pro Einheit: Präfixe der DarkRP-Job-Commands. Ein Eintrag
     -- passt auf jeden Command, der so beginnt ("501stheavy_" -> 501stheavy_pvt,
@@ -167,6 +229,7 @@ hook.Add("DarkRPFinishedLoading", "GRNInventory_ArmorJobBindings", INV.RefreshAr
 hook.Add("InitPostEntity", "GRNInventory_ArmorJobBindings", INV.RefreshArmorJobBindings)
 
 local UNIT = C.Armor.UnitJobs or {}
+local UNIT_MODEL = C.Armor.UnitModels or {}
 local P = "models/nevelgrad/clothe_parties/clone/"
 
 -- Helmets ----------------------------------------------------
@@ -176,6 +239,7 @@ armor("armor_helmet_p1", {
     Slot = "head", Model = P .. "helmet/helmet_clone_p1_standart.mdl",
     Icon = "fa-helmet-safety", Rarity = "common",
     Armor = 15, Weight = 2.0, Size = { W = 1, H = 1 },
+    IconModel = UNIT_MODEL.T501,
 })
 
 armor("armor_helmet_arf", {
@@ -185,6 +249,7 @@ armor("armor_helmet_arf", {
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 15, DamageReduction = 0.02, Weight = 2.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.ARF),
+    IconModel = UNIT_MODEL.ARF,
 })
 
 armor("armor_helmet_barc", {
@@ -194,6 +259,7 @@ armor("armor_helmet_barc", {
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 15, DamageReduction = 0.02, Weight = 2.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.BARC),
+    IconModel = UNIT_MODEL.BARC,
 })
 
 armor("armor_helmet_pilot", {
@@ -203,6 +269,7 @@ armor("armor_helmet_pilot", {
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 10, Weight = 1.8, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.NAVY),
+    IconModel = UNIT_MODEL.AVP,
 })
 
 armor("armor_helmet_airborne", {
@@ -212,6 +279,7 @@ armor("armor_helmet_airborne", {
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 20, DamageReduction = 0.02, Weight = 2.2, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.AB),
+    IconModel = UNIT_MODEL.AB,
 })
 
 armor("armor_helmet_heavy", {
@@ -221,6 +289,7 @@ armor("armor_helmet_heavy", {
     Icon = "fa-helmet-safety", Rarity = "rare",
     Armor = 25, DamageReduction = 0.04, Weight = 3.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.HEAVY),
+    IconModel = UNIT_MODEL.HEAVY,
 })
 
 armor("armor_helmet_arc", {
@@ -229,6 +298,7 @@ armor("armor_helmet_arc", {
     Slot = "head", Model = P .. "helmet/helmet_clone_arc.mdl",
     Icon = "fa-helmet-safety", Rarity = "epic",
     Armor = 25, DamageReduction = 0.05, Weight = 2.5, Size = { W = 1, H = 1 },
+    IconModel = UNIT_MODEL.T501,
 })
 
 -- Shoulder ---------------------------------------------------
@@ -240,6 +310,7 @@ armor("armor_shoulder_standard", {
     Icon = "fa-shield", Rarity = "common",
     Armor = 10, Weight = 1.5, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.T501, UNIT.AB, UNIT.ENG, UNIT.ST),
+    IconModel = UNIT_MODEL.T501,
 })
 
 armor("armor_shoulder_heavy", {
@@ -249,6 +320,7 @@ armor("armor_shoulder_heavy", {
     Icon = "fa-shield", Rarity = "rare",
     Armor = 20, DamageReduction = 0.03, Weight = 3.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.HEAVY),
+    IconModel = UNIT_MODEL.HEAVY,
 })
 
 armor("armor_shoulder_light", {
@@ -258,6 +330,7 @@ armor("armor_shoulder_light", {
     Icon = "fa-shield", Rarity = "common",
     Armor = 5, Weight = 1.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.ARF, UNIT.BARC, UNIT.MED),
+    IconModel = UNIT_MODEL.ARF,
 })
 
 -- Chest ------------------------------------------------------
@@ -267,6 +340,7 @@ armor("armor_chest_standard", {
     Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
     Icon = "fa-shirt", Rarity = "common",
     Armor = 40, DamageReduction = 0.05, Weight = 6.0, Size = { W = 2, H = 2 },
+    IconModel = UNIT_MODEL.T501,
 })
 
 armor("armor_chest_heavy", {
@@ -276,6 +350,7 @@ armor("armor_chest_heavy", {
     Icon = "fa-shirt", Rarity = "rare",
     Armor = 60, DamageReduction = 0.08, Weight = 9.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.HEAVY),
+    IconModel = UNIT_MODEL.HEAVY,
 })
 
 armor("armor_chest_light", {
@@ -285,6 +360,7 @@ armor("armor_chest_light", {
     Icon = "fa-shirt", Rarity = "common",
     Armor = 25, DamageReduction = 0.03, Weight = 4.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.ARF, UNIT.NAVY),
+    IconModel = UNIT_MODEL.ARF,
 })
 
 armor("armor_chest_medic", {
@@ -294,6 +370,7 @@ armor("armor_chest_medic", {
     Icon = "fa-shirt", Rarity = "uncommon",
     Armor = 35, DamageReduction = 0.04, Weight = 5.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.MED),
+    IconModel = UNIT_MODEL.MED,
 })
 
 armor("armor_chest_guard", {
@@ -303,6 +380,7 @@ armor("armor_chest_guard", {
     Icon = "fa-shirt", Rarity = "uncommon",
     Armor = 45, DamageReduction = 0.06, Weight = 6.5, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.ST),
+    IconModel = UNIT_MODEL.ST,
 })
 
 -- Back -------------------------------------------------------
@@ -312,6 +390,7 @@ armor("armor_back_standard", {
     Slot = "back", Model = P .. "backpack/backpack_clone_standart.mdl",
     Icon = "fa-suitcase", Rarity = "common",
     CarryWeight = 15, Weight = 2.0, Size = { W = 2, H = 2 },
+    IconModel = UNIT_MODEL.T501,
 })
 
 armor("armor_back_jetpack", {
@@ -321,6 +400,7 @@ armor("armor_back_jetpack", {
     Icon = "fa-jet-fighter-up", Rarity = "rare",
     Armor = 5, CarryWeight = 5, Weight = 4.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.AB),
+    IconModel = UNIT_MODEL.AB,
 })
 
 armor("armor_back_arc", {
@@ -330,6 +410,7 @@ armor("armor_back_arc", {
     Icon = "fa-suitcase", Rarity = "epic",
     Armor = 10, CarryWeight = 20, Weight = 3.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.ARF),
+    IconModel = UNIT_MODEL.ARF,
 })
 
 armor("armor_back_medic", {
@@ -339,6 +420,7 @@ armor("armor_back_medic", {
     Icon = "fa-suitcase-medical", Rarity = "uncommon",
     CarryWeight = 25, Weight = 2.5, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.MED),
+    IconModel = UNIT_MODEL.MED,
 })
 
 armor("armor_back_tools", {
@@ -348,6 +430,7 @@ armor("armor_back_tools", {
     Icon = "fa-toolbox", Rarity = "uncommon",
     CarryWeight = 20, Weight = 2.5, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.ENG),
+    IconModel = UNIT_MODEL.ENG,
 })
 
 -- Hip --------------------------------------------------------
@@ -357,6 +440,7 @@ armor("armor_hip_cadet", {
     Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
     Icon = "fa-vest", Rarity = "common",
     Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
+    IconModel = UNIT_MODEL.T501,
 })
 
 armor("armor_hip_heavy", {
@@ -366,6 +450,7 @@ armor("armor_hip_heavy", {
     Icon = "fa-vest", Rarity = "rare",
     Armor = 15, DamageReduction = 0.02, Weight = 2.5, Size = { W = 2, H = 1 },
     AllowedJobs = jobs(UNIT.HEAVY),
+    IconModel = UNIT_MODEL.HEAVY,
 })
 
 armor("armor_hip_tools", {
@@ -375,6 +460,7 @@ armor("armor_hip_tools", {
     Icon = "fa-screwdriver-wrench", Rarity = "uncommon",
     Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
     AllowedJobs = jobs(UNIT.ENG),
+    IconModel = UNIT_MODEL.ENG,
 })
 
 -- ============================================================
@@ -410,6 +496,70 @@ function INV.ArmorVisualAllowed(model)
     cached = istable(cfg.BaseModels) and cfg.BaseModels[norm] == true
     armorVisualCache[key] = cached
     return cached
+end
+
+-- Bodygroup profile (C.Armor.Bodygroups.Profiles) for a player model, or nil.
+function INV.GetArmorBodygroupProfile(model)
+    local cfg = C.Armor and C.Armor.Bodygroups
+    if not istable(cfg) or cfg.Enabled == false then return nil end
+    local norm = string.lower(string.Replace(tostring(model or ""), "\\", "/"))
+    if norm == "" then return nil end
+    for _, profile in ipairs(cfg.Profiles or {}) do
+        for _, prefix in ipairs(istable(profile.Match) and profile.Match or { profile.Match }) do
+            prefix = string.lower(tostring(prefix or ""))
+            if prefix ~= "" and string.sub(norm, 1, #prefix) == prefix then return profile end
+        end
+    end
+    return nil
+end
+
+-- Finds the armor bodygroups on an entity (player or clientside model).
+-- Returns { [groupKey] = { index, on, off, slot } } (cached per model).
+local bodygroupCache, bodygroupCacheCfg = {}, nil
+function INV.ResolveArmorBodygroups(ent)
+    if not IsValid(ent) then return nil end
+    local model = string.lower(tostring(ent:GetModel() or ""))
+    local profile = INV.GetArmorBodygroupProfile(model)
+    if not profile then return nil end
+
+    local cfg = C.Armor.Bodygroups
+    if bodygroupCacheCfg ~= cfg then bodygroupCache, bodygroupCacheCfg = {}, cfg end
+    if bodygroupCache[model] then return bodygroupCache[model] end
+
+    local names = {}
+    for i = 0, ent:GetNumBodyGroups() - 1 do
+        names[i] = string.lower(tostring(ent:GetBodygroupName(i) or ""))
+    end
+
+    local out = {}
+    for key, values in pairs(profile.Values or {}) do
+        local group = istable(cfg.Groups) and cfg.Groups[key] or nil
+        local index = tonumber(values.Index)
+        if not index and group then
+            for _, wanted in ipairs(group.Names or {}) do
+                wanted = string.lower(tostring(wanted))
+                for i, name in pairs(names) do
+                    if name == wanted then index = i break end
+                end
+                if index then break end
+            end
+            if not index then
+                for _, wanted in ipairs(group.Names or {}) do
+                    wanted = string.lower(tostring(wanted))
+                    for i, name in pairs(names) do
+                        if string.find(name, wanted, 1, true) then index = i break end
+                    end
+                    if index then break end
+                end
+            end
+        end
+        if index and group and names[index] then
+            out[key] = { index = index, on = tonumber(values.On) or 0, off = tonumber(values.Off) or 0, slot = group.Slot }
+        end
+    end
+
+    bodygroupCache[model] = out
+    return out
 end
 
 -- Model used to render the small icon of any item.
