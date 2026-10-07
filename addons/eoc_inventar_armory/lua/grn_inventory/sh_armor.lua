@@ -49,6 +49,12 @@ C.Armor = {
         { ID = "chest",    Label = "BRUST",    Side = "left",  Icon = "fa-shirt",         Hint = "Brustpanzer" },
         { ID = "back",     Label = "RÜCKEN",   Side = "right", Icon = "fa-suitcase",      Hint = "Rucksack / Jetpack" },
         { ID = "hip",      Label = "HOSE",     Side = "right", Icon = "fa-socks",         Hint = "Beinpanzer / Hose" },
+        -- Rang- und Ausrüstungsteile (nur Optik, 501st)
+        { ID = "pauldron", Label = "PAULDRON", Side = "left",  Icon = "fa-shield",        Hint = "Pauldron" },
+        { ID = "strap",    Label = "GURT",     Side = "left",  Icon = "fa-ribbon",        Hint = "Rang-Gurt (Specialist / Corporal / Chief Corporal)" },
+        { ID = "kama",     Label = "KAMA",     Side = "right", Icon = "fa-vest-patches",  Hint = "Kama (ab Sergeant)" },
+        { ID = "holster",  Label = "HOLSTER",  Side = "right", Icon = "fa-gun",           Hint = "Holster (dual / rechts)" },
+        { ID = "ammo",     Label = "MUNITION", Side = "right", Icon = "fa-box-archive",   Hint = "Extra-Munition" },
     },
 
     -- Character preview inside the inventory.
@@ -92,6 +98,14 @@ C.Armor = {
             macrobinoculars = { Items = { "armor_acc_macrobinoculars" }, Requires = "head", Names = { "macrobinoculars", "macrobinocular", "binocular", "fernglas" } },
             rangefinder     = { Items = { "armor_acc_rangefinder" },     Requires = "head", Names = { "rangefinder", "entfernungsmesser" } },
             sunvisor        = { Items = { "armor_acc_sunvisor" },        Requires = "head", Names = { "sunvisor", "visor", "sonnenblende" } },
+
+            -- Rang- und Ausrüstungsteile. Strap und Holster sind je EINE Bodygroup,
+            -- das Item bestimmt den Wert (PlayerBodygroups).
+            pauldron = { Slot = "pauldron", Names = { "pauldron" } },
+            kama     = { Slot = "kama",     Names = { "kama", "karma" } },
+            strap    = { Slot = "strap",    Names = { "strap", "straps", "gurt" } },
+            holster  = { Slot = "holster",  Names = { "holster", "holsters" } },
+            ammo     = { Slot = "ammo",     Names = { "extra munition", "extra_ammo", "extraammo", "ammo", "munition" } },
         },
 
         -- Werte pro Model-Gruppe. Match = Anfang des Model-Pfads.
@@ -110,6 +124,11 @@ C.Armor = {
                     macrobinoculars = { On = 1, Off = 0 },
                     rangefinder     = { On = 1, Off = 0 },
                     sunvisor        = { On = 0, Off = 1 },
+                    pauldron = { On = 1, Off = 0 },
+                    kama     = { On = 1, Off = 0 },
+                    strap    = { On = 3, Off = 0 }, -- 1 Chief Corporal, 2 Corporal Sidebag, 3 Corporal, 4 Specialist
+                    holster  = { On = 2, Off = 0 }, -- 1 dual, 2 rechts
+                    ammo     = { On = 1, Off = 0 },
                 },
             },
             {
@@ -143,9 +162,23 @@ C.Armor = {
     IconCamera = {
         head     = { Bone = "ValveBiped.Bip01_Head1",     Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
         accessory = { Bone = "ValveBiped.Bip01_Head1",    Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
+        pauldron = { Bone = "ValveBiped.Bip01_L_UpperArm", Radius = 11, Dir = Vector(0.5, 1, 0.3) },
+        strap    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 15, Dir = Vector(1, 0.2, 0.1) },
+        kama     = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 17, Dir = Vector(-1, 0.4, 0.05) },
+        holster  = { Bone = "ValveBiped.Bip01_R_Thigh",   Radius = 11, Dir = Vector(0.4, -1, 0.1) },
+        ammo     = { Bone = "ValveBiped.Bip01_Spine1",    Radius = 14, Dir = Vector(1, 0.3, 0.05) },
         chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
         back     = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(-1, 0.35, 0.15) },
         hip      = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 15, Dir = Vector(1, 0.3, 0.05) },
+    },
+
+    -- Rang-Teile: welche Ränge (Ende des Job-Commands) sie tragen dürfen.
+    RankGear = {
+        Units = { "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }, -- nur 501st
+        KamaRanks = { "sgt", "fsgt", "sgm", "lt", "1lt", "cpt" },     -- ab Sergeant
+        SpecialistStrapRanks = { "spc" },
+        CorporalStrapRanks = { "cpl" },
+        ChiefCorporalStrapRanks = { "ccpl" },
     },
 
     -- Job-Bindung pro Einheit: Präfixe der DarkRP-Job-Commands. Ein Eintrag
@@ -209,7 +242,13 @@ local function fillJobBinding(binding)
     for _, job in pairs(istable(RPExtraTeams) and RPExtraTeams or {}) do
         local command = istable(job) and tostring(job.command or "") or ""
         if command ~= "" then
-            for _, prefix in ipairs(binding.prefixes) do
+            local rankOK = binding.ranks == nil
+            if not rankOK then
+                for rank in pairs(binding.ranks) do
+                    if string.sub(command, -(#rank + 1)) == "_" .. rank then rankOK = true break end
+                end
+            end
+            for _, prefix in ipairs(rankOK and binding.prefixes or {}) do
                 if string.sub(command, 1, #prefix) == prefix then
                     list[command] = true
                     break
@@ -231,6 +270,17 @@ local function jobs(...)
     jobBindings[#jobBindings + 1] = binding
     fillJobBinding(binding)
     return binding.list
+end
+
+-- Like jobs(), but only for the given ranks (end of the command):
+-- rankJobs({ "sgt", "fsgt" }, UNIT.T501, UNIT.HEAVY) -> 501st_sgt, 501stheavy_fsgt ...
+local function rankJobs(ranks, ...)
+    local list = jobs(...)
+    local binding = jobBindings[#jobBindings]
+    binding.ranks = {}
+    for _, rank in ipairs(ranks) do binding.ranks[string.lower(rank)] = true end
+    fillJobBinding(binding)
+    return list
 end
 
 function INV.RefreshArmorJobBindings()
@@ -343,6 +393,69 @@ armor("armor_acc_sunvisor", {
     Icon = "fa-sun", Rarity = "common",
     Weight = 0.3, Size = { W = 1, H = 1 },
     IconModel = UNIT_MODEL.T501,
+})
+
+-- Rang- und Ausrüstungsteile (nur Optik) -------------------
+local RG = C.Armor.RankGear or {}
+local RANK_UNITS = {}
+for _, unit in ipairs(RG.Units or {}) do RANK_UNITS[#RANK_UNITS + 1] = UNIT[unit] end
+local function gear(id, data)
+    data.Rarity = data.Rarity or "common"
+    data.Weight = data.Weight or 0.3
+    data.Size = data.Size or { W = 1, H = 1 }
+    data.IconModel = data.IconModel or UNIT_MODEL.T501
+    data.AllowedJobs = data.AllowedJobs or jobs(unpack(RANK_UNITS))
+    armor(id, data)
+end
+
+gear("armor_rank_pauldron", {
+    Name = "Pauldron", Description = "Stoff-Pauldron über der Schulter.",
+    Slot = "pauldron", Icon = "fa-shield", Model = P .. "pauldron/pauldron_clone_standart.mdl",
+})
+
+gear("armor_rank_kama", {
+    Name = "Kama", Description = "Kama der Unteroffiziere und Offiziere (ab Sergeant).",
+    Slot = "kama", Icon = "fa-vest-patches", Model = P .. "kama/kama_clone_standart.mdl",
+    AllowedJobs = rankJobs(RG.KamaRanks or {}, unpack(RANK_UNITS)),
+})
+
+gear("armor_rank_strap_spc", {
+    Name = "Specialist-Strap", Description = "Rang-Gurt der Specialists.",
+    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 4 },
+    AllowedJobs = rankJobs(RG.SpecialistStrapRanks or {}, unpack(RANK_UNITS)),
+})
+
+gear("armor_rank_strap_cpl", {
+    Name = "Corporal-Strap", Description = "Rang-Gurt der Corporals.",
+    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 3 },
+    AllowedJobs = rankJobs(RG.CorporalStrapRanks or {}, unpack(RANK_UNITS)),
+})
+
+gear("armor_rank_strap_cpl_sidebag", {
+    Name = "Corporal-Sidebag-Strap", Description = "Rang-Gurt der Corporals mit Seitentasche.",
+    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 2 },
+    AllowedJobs = rankJobs(RG.CorporalStrapRanks or {}, unpack(RANK_UNITS)),
+})
+
+gear("armor_rank_strap_ccpl", {
+    Name = "Chief-Corporal-Strap", Description = "Rang-Gurt der Chief Corporals.",
+    Slot = "strap", Icon = "fa-ribbon", Model = P .. "pauldron/pauldron_clone_strap.mdl", PlayerBodygroups = { strap = 1 },
+    AllowedJobs = rankJobs(RG.ChiefCorporalStrapRanks or {}, unpack(RANK_UNITS)),
+})
+
+gear("armor_holster_dual", {
+    Name = "Holster (Dual)", Description = "Zwei Pistolenholster.",
+    Slot = "holster", Icon = "fa-gun", PlayerBodygroups = { holster = 1 },
+})
+
+gear("armor_holster_right", {
+    Name = "Holster (rechts)", Description = "Pistolenholster rechts.",
+    Slot = "holster", Icon = "fa-gun", PlayerBodygroups = { holster = 2 },
+})
+
+gear("armor_ammo_extra", {
+    Name = "Extra-Munition", Description = "Zusätzliche Magazintaschen.",
+    Slot = "ammo", Icon = "fa-box-archive", PlayerBodygroups = { ammo = 1 },
 })
 
 -- Chest ------------------------------------------------------

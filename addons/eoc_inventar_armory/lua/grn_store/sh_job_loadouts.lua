@@ -119,8 +119,15 @@ ARMOR.NAVY  = { "armor_helmet_pilot", "armor_chest_light", "armor_hip_cadet" }
 
 -- Helm-Zubehör: jede 501st-Einheit kann sich eins davon im Kleiderschrank nehmen.
 local HELMET_ACC = { "armor_acc_macrobinoculars", "armor_acc_rangefinder", "armor_acc_sunvisor" }
+-- Rang- und Ausrüstungsteile: der Kleiderschrank zeigt nur, was der Rang
+-- tragen darf (Freigabe in grn_inventory/sh_armor.lua, C.Armor.RankGear).
+local RANK_GEAR = {
+    "armor_rank_pauldron", "armor_rank_kama",
+    "armor_rank_strap_spc", "armor_rank_strap_cpl", "armor_rank_strap_cpl_sidebag", "armor_rank_strap_ccpl",
+    "armor_holster_dual", "armor_holster_right", "armor_ammo_extra",
+}
 for _, unit in ipairs({ "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }) do
-    ARMOR[unit] = merge(ARMOR[unit], HELMET_ACC)
+    ARMOR[unit] = merge(ARMOR[unit], HELMET_ACC, RANK_GEAR)
 end
 
 -- Hängt einen Rüstungssatz an die genannten Waffen-Kits.

@@ -611,9 +611,18 @@ function S.BuildArmoryWeapons(ply)
         out[#out + 1] = data
     end
 
+    -- Armor the current job may not wear (rank pieces, other units) is hidden.
+    local job = IsValid(ply) and RPExtraTeams and RPExtraTeams[ply:Team()] or nil
+    local command = istable(job) and tostring(job.command or "") or ""
+    local function mayWear(itemID)
+        local def = GRNInventory and isfunction(GRNInventory.GetItemDefinition) and GRNInventory.GetItemDefinition(itemID) or nil
+        if not istable(def) or def.Type ~= "armor" or not istable(def.AllowedJobs) or next(def.AllowedJobs) == nil then return true end
+        return def.AllowedJobs[command] == true
+    end
+
     if jobLoadout then
         for _, itemID in ipairs(jobLoadout.Items or {}) do
-            append(makeJobEquipmentData(itemID))
+            if mayWear(itemID) then append(makeJobEquipmentData(itemID)) end
         end
 
         local jobCfg = A.JobLoadouts or {}

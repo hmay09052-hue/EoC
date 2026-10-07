@@ -28,6 +28,7 @@ local function cacheKey(model, opts)
     if istable(opts) then
         extra = tostring(opts.kind or "") .. tostring(opts.camDir or "") .. tostring(opts.zoom or "")
             .. tostring(opts.bone or "") .. tostring(opts.radius or "")
+            .. (istable(opts.override) and (util.TableToJSON(opts.override) or "") or "")
     end
     return util.CRC(string.lower(model) .. "|" .. extra .. "|" .. v .. "|" .. iconSize())
 end
@@ -106,8 +107,9 @@ local function renderJob(job)
     if job.opts.bone then
         local seq = ent:LookupSequence("idle_all_01")
         if seq and seq >= 0 then ent:ResetSequence(seq) ent:SetCycle(0) end
-        for _, group in pairs(isfunction(INV.ResolveArmorBodygroups) and INV.ResolveArmorBodygroups(ent) or {}) do
-            ent:SetBodygroup(group.index, group.on)
+        local override = istable(job.opts.override) and job.opts.override or {}
+        for key, group in pairs(isfunction(INV.ResolveArmorBodygroups) and INV.ResolveArmorBodygroups(ent) or {}) do
+            ent:SetBodygroup(group.index, tonumber(override[key]) or group.on)
         end
     end
     ent:SetupBones()
@@ -222,6 +224,7 @@ function INV.RequestItemIcon(itemID, callback)
         camDir = def.IconCamDir or (camera and camera.Dir),
         zoom = def.IconZoom,
         bone = camera and camera.Bone or nil,
+        override = camera and istable(def.PlayerBodygroups) and def.PlayerBodygroups or nil,
         radius = camera and camera.Radius or nil,
     }, callback)
 end
