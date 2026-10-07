@@ -14,8 +14,8 @@ local A = C.Armory
 -- weapons of the job.
 --
 -- Items reference GRN Inventory item IDs (see grn_inventory/sh_job_armory_items.lua).
--- Armor items from grn_inventory/sh_armor_items.lua can be added here as well;
--- the armory crate then issues them like weapons.
+-- Armor items from grn_inventory/sh_armor.lua can be added here as well;
+-- the armory crate then issues them like weapons (see ARMOR below).
 --
 -- After changing this file do a FULL server restart (not just a map change).
 
@@ -101,6 +101,44 @@ KIT.RN_STAFF = J("arccw_k_dc15s", "arccw_k_dc17sa_dual", "arccw_k_dc17sa", "shie
 -- Republic Navy AVP
 KIT.AVP_MAN = J("arccw_k_dc15s", "arccw_k_dc15a", "arccw_k_dp23c", "arccw_k_nade_thermal")
 KIT.AVP_NCO = J("arccw_k_dc15s", "arccw_k_dc15a", "arccw_k_dp23c", "weapon_cuff_handcuffs", "arccw_k_dc17_akimbo", "arccw_k_nade_thermal")
+
+-- ---------------------------------------------------------
+-- Rüstungssätze pro Einheit (Items aus grn_inventory/sh_armor.lua)
+-- Reihenfolge: Kopf, Schulter, Brust, Rücken, Hüfte
+-- ---------------------------------------------------------
+local ARMOR = {}
+ARMOR.T501  = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.HEAVY = { "armor_helmet_heavy", "armor_shoulder_heavy", "armor_chest_heavy", "armor_back_standard", "armor_hip_heavy" }
+ARMOR.ARF   = { "armor_helmet_arf", "armor_shoulder_light", "armor_chest_light", "armor_back_arc", "armor_hip_cadet" }
+ARMOR.BARC  = { "armor_helmet_barc", "armor_shoulder_light", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.AB    = { "armor_helmet_airborne", "armor_shoulder_standard", "armor_chest_standard", "armor_back_jetpack", "armor_hip_cadet" }
+ARMOR.MED   = { "armor_helmet_p1", "armor_shoulder_light", "armor_chest_medic", "armor_back_medic", "armor_hip_cadet" }
+ARMOR.ENG   = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_standard", "armor_back_tools", "armor_hip_tools" }
+ARMOR.ST    = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_guard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.NAVY  = { "armor_helmet_pilot", "armor_chest_light", "armor_hip_cadet" }
+
+-- Hängt einen Rüstungssatz an die genannten Waffen-Kits.
+local function withArmor(armorKit, ...)
+    for _, kitName in ipairs({ ... }) do
+        if KIT[kitName] then KIT[kitName] = merge(KIT[kitName], armorKit) end
+    end
+end
+
+withArmor(ARMOR.T501, "T501_PVT", "T501_MAN", "T501_NCO", "T501_OFF", "T501_CPT")
+withArmor(ARMOR.HEAVY, "HEAVY_MAN", "HEAVY_NCO")
+withArmor(ARMOR.ARF, "ARF_MAN", "ARF_NCO")
+withArmor(ARMOR.BARC, "BARC_MAN", "BARC_NCO")
+withArmor(ARMOR.AB, "AB_MAN", "AB_NCO")
+withArmor(ARMOR.MED, "MED_MAN", "MED_NCO", "MED_LT")
+withArmor(ARMOR.ENG, "ENG_MAN", "ENG_NCO", "ENG_LT")
+withArmor(ARMOR.ST, "ST_MAN", "ST_NCO", "ST_OFF", "ST_THORN", "STK9")
+withArmor(ARMOR.NAVY, "RN_CREW", "RN_NCO", "RN_OFF", "RN_STAFF", "AVP_MAN", "AVP_NCO")
+
+-- Lore-Charaktere (passen auf kein Präfix):
+-- Kix nutzt KIT.MED_NCO (Sanitäter), Boomer KIT.ARF_NCO (ARF),
+-- Hardcase bekommt den Heavy-Satz, alle anderen den Torrent-Satz.
+withArmor(ARMOR.HEAVY, "HARDCASE")
+withArmor(ARMOR.T501, "LORE_STD", "REX", "CORIC")
 
 -- ---------------------------------------------------------
 -- Command -> kit

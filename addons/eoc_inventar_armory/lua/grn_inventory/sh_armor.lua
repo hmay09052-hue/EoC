@@ -20,14 +20,16 @@ local C = INV.Config
 -- Nevelgrad clothing parts are built for the modular clone base model, the
 -- visual part is only drawn on models listed in BaseModels (VisualMode
 -- "base_only"). The stats ALWAYS work, on every player model.
+-- Echoes of Clones: the jobs use complete player models (501st_trooper_v2,
+-- st_ph1_trooper ...), so the visuals are switched off ("never").
 C.Armor = {
     -- false = no armor slots in the inventory (HEAD/SHOULDER/CHEST/BACK/HIP hidden).
-    Enabled = false,
+    Enabled = true,
 
-    -- "base_only" = draw armor models only on BaseModels (recommended)
+    -- "base_only" = draw armor models only on BaseModels
     -- "always"    = draw on every player model (may clip on full-armor models)
-    -- "never"     = stats only, no visuals
-    VisualMode = "base_only",
+    -- "never"     = stats only, no visuals (Jobs haben komplette Models)
+    VisualMode = "never",
 
     BaseModels = {
         ["models/nevelgrad/players/clones/base_trooper.mdl"] = true,
@@ -66,6 +68,26 @@ C.Armor = {
 
     -- Also render icons for weapons that have no IconURL (uses the SWEP world model).
     RenderWeaponIcons = true,
+
+    -- Rüstung aus der Waffenkammer wird direkt angelegt, wenn der passende
+    -- Slot noch frei ist (sonst landet sie nur im Inventar).
+    AutoEquipFromArmory = true,
+
+    -- Job-Bindung pro Einheit: Präfixe der DarkRP-Job-Commands. Ein Eintrag
+    -- passt auf jeden Command, der so beginnt ("501stheavy_" -> 501stheavy_pvt,
+    -- 501stheavy_sgt ...). Lore-Charaktere stehen einzeln dabei.
+    -- Wird unten bei den Items als AllowedJobs = jobs(UNIT.HEAVY) genutzt.
+    UnitJobs = {
+        T501  = { "501st_", "501strex", "501stdogma", "501stappo", "501stjesse", "501stecho", "501stfives", "501stkano", "501stcoric" },
+        HEAVY = { "501stheavy_", "501sthardcase" },
+        ARF   = { "501starf_", "501stboomer" },
+        BARC  = { "501stbarc_" },
+        AB    = { "501stab_" },
+        MED   = { "501stmed_", "501stkix" },
+        ENG   = { "501steng_" },
+        ST    = { "st_", "stk9_" },
+        NAVY  = { "rn", "avp_" },
+    },
 }
 
 -- ============================================================
@@ -96,6 +118,55 @@ local function armor(id, data)
     end
 end
 
+-- Job binding -------------------------------------------------
+-- jobs({ "501stheavy_", "501sthardcase" }) -> AllowedJobs table with every
+-- DarkRP job command that starts with one of the prefixes. DarkRP creates its
+-- jobs after addon autorun, so every table is filled again once RPExtraTeams
+-- exists (see the hooks below). A placeholder keeps the table non-empty,
+-- because an empty AllowedJobs would mean "every job".
+local jobBindings = {}
+
+local function fillJobBinding(binding)
+    local list = binding.list
+    for command in pairs(list) do list[command] = nil end
+    list["__eoc_armor_binding"] = true
+
+    for _, job in pairs(istable(RPExtraTeams) and RPExtraTeams or {}) do
+        local command = istable(job) and tostring(job.command or "") or ""
+        if command ~= "" then
+            for _, prefix in ipairs(binding.prefixes) do
+                if string.sub(command, 1, #prefix) == prefix then
+                    list[command] = true
+                    break
+                end
+            end
+        end
+    end
+end
+
+local function jobs(...)
+    local prefixes = {}
+    for _, value in ipairs({ ... }) do
+        for _, prefix in ipairs(istable(value) and value or { value }) do
+            prefix = tostring(prefix or "")
+            if prefix ~= "" then prefixes[#prefixes + 1] = prefix end
+        end
+    end
+    local binding = { prefixes = prefixes, list = {} }
+    jobBindings[#jobBindings + 1] = binding
+    fillJobBinding(binding)
+    return binding.list
+end
+
+function INV.RefreshArmorJobBindings()
+    for _, binding in ipairs(jobBindings) do fillJobBinding(binding) end
+end
+
+hook.Add("PostGamemodeLoaded", "GRNInventory_ArmorJobBindings", INV.RefreshArmorJobBindings)
+hook.Add("DarkRPFinishedLoading", "GRNInventory_ArmorJobBindings", INV.RefreshArmorJobBindings)
+hook.Add("InitPostEntity", "GRNInventory_ArmorJobBindings", INV.RefreshArmorJobBindings)
+
+local UNIT = C.Armor.UnitJobs or {}
 local P = "models/nevelgrad/clothe_parties/clone/"
 
 -- Helmets ----------------------------------------------------
@@ -113,6 +184,7 @@ armor("armor_helmet_arf", {
     Slot = "head", Model = P .. "helmet/helmet_clone_p1_arf.mdl",
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 15, DamageReduction = 0.02, Weight = 2.0, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.ARF),
 })
 
 armor("armor_helmet_barc", {
@@ -121,6 +193,7 @@ armor("armor_helmet_barc", {
     Slot = "head", Model = P .. "helmet/helmet_clone_barc.mdl",
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 15, DamageReduction = 0.02, Weight = 2.0, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.BARC),
 })
 
 armor("armor_helmet_pilot", {
@@ -129,6 +202,7 @@ armor("armor_helmet_pilot", {
     Slot = "head", Model = P .. "helmet/helmet_clone_p1_pilot.mdl",
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 10, Weight = 1.8, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.NAVY),
 })
 
 armor("armor_helmet_airborne", {
@@ -137,6 +211,7 @@ armor("armor_helmet_airborne", {
     Slot = "head", Model = P .. "helmet/helmet_clone_airborne.mdl",
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 20, DamageReduction = 0.02, Weight = 2.2, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.AB),
 })
 
 armor("armor_helmet_heavy", {
@@ -145,6 +220,7 @@ armor("armor_helmet_heavy", {
     Slot = "head", Model = P .. "helmet/helmet_clone_atrt_heavy.mdl",
     Icon = "fa-helmet-safety", Rarity = "rare",
     Armor = 25, DamageReduction = 0.04, Weight = 3.0, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.HEAVY),
 })
 
 armor("armor_helmet_arc", {
@@ -155,6 +231,35 @@ armor("armor_helmet_arc", {
     Armor = 25, DamageReduction = 0.05, Weight = 2.5, Size = { W = 1, H = 1 },
 })
 
+-- Shoulder ---------------------------------------------------
+-- Kein Nevelgrad-Model für Schulterteile: Symbol = FontAwesome-Icon.
+armor("armor_shoulder_standard", {
+    Name = "Schulterpanzer (Standard)",
+    Description = "Plastoid-Schulterplatten der Klon-Infanterie.",
+    Slot = "shoulder",
+    Icon = "fa-shield", Rarity = "common",
+    Armor = 10, Weight = 1.5, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.T501, UNIT.AB, UNIT.ENG, UNIT.ST),
+})
+
+armor("armor_shoulder_heavy", {
+    Name = "Schulterpanzer (Schwer)",
+    Description = "Verstärkte Schulterplatten des Heavy-Zugs.",
+    Slot = "shoulder",
+    Icon = "fa-shield", Rarity = "rare",
+    Armor = 20, DamageReduction = 0.03, Weight = 3.0, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.HEAVY),
+})
+
+armor("armor_shoulder_light", {
+    Name = "Schulterpanzer (Leicht)",
+    Description = "Leichte Schulterplatten für Aufklärer und Sanitäter.",
+    Slot = "shoulder",
+    Icon = "fa-shield", Rarity = "common",
+    Armor = 5, Weight = 1.0, Size = { W = 1, H = 1 },
+    AllowedJobs = jobs(UNIT.ARF, UNIT.BARC, UNIT.MED),
+})
+
 -- Chest ------------------------------------------------------
 armor("armor_chest_standard", {
     Name = "Klon-Brustpanzer",
@@ -162,6 +267,42 @@ armor("armor_chest_standard", {
     Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
     Icon = "fa-shirt", Rarity = "common",
     Armor = 40, DamageReduction = 0.05, Weight = 6.0, Size = { W = 2, H = 2 },
+})
+
+armor("armor_chest_heavy", {
+    Name = "Brustpanzer (Schwer)",
+    Description = "Schwerer Brustpanzer des Heavy-Zugs. Viel Schutz, viel Gewicht.",
+    Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
+    Icon = "fa-shirt", Rarity = "rare",
+    Armor = 60, DamageReduction = 0.08, Weight = 9.0, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.HEAVY),
+})
+
+armor("armor_chest_light", {
+    Name = "Brustpanzer (Leicht)",
+    Description = "Leichter Brustpanzer für Aufklärer, Piloten und Flottenpersonal.",
+    Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
+    Icon = "fa-shirt", Rarity = "common",
+    Armor = 25, DamageReduction = 0.03, Weight = 4.0, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.ARF, UNIT.NAVY),
+})
+
+armor("armor_chest_medic", {
+    Name = "Brustpanzer (Sanitäter)",
+    Description = "Brustpanzer des Sanitätszugs mit Halterungen für Medpacks.",
+    Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
+    Icon = "fa-shirt", Rarity = "uncommon",
+    Armor = 35, DamageReduction = 0.04, Weight = 5.0, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.MED),
+})
+
+armor("armor_chest_guard", {
+    Name = "Brustpanzer (Wache)",
+    Description = "Verstärkter Brustpanzer der Schocktruppen.",
+    Slot = "chest", Model = P .. "chest/chest_clone_standart.mdl",
+    Icon = "fa-shirt", Rarity = "uncommon",
+    Armor = 45, DamageReduction = 0.06, Weight = 6.5, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.ST),
 })
 
 -- Back -------------------------------------------------------
@@ -179,6 +320,7 @@ armor("armor_back_jetpack", {
     Slot = "back", Model = P .. "backpack/backpack_clone_jetpack.mdl",
     Icon = "fa-jet-fighter-up", Rarity = "rare",
     Armor = 5, CarryWeight = 5, Weight = 4.0, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.AB),
 })
 
 armor("armor_back_arc", {
@@ -187,6 +329,25 @@ armor("armor_back_arc", {
     Slot = "back", Model = P .. "backpack/backpack_clone_arc.mdl",
     Icon = "fa-suitcase", Rarity = "epic",
     Armor = 10, CarryWeight = 20, Weight = 3.0, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.ARF),
+})
+
+armor("armor_back_medic", {
+    Name = "Sanitätsrucksack",
+    Description = "Großer Rucksack für Bacta und Verbandsmaterial.",
+    Slot = "back", Model = P .. "backpack/backpack_clone_standart.mdl",
+    Icon = "fa-suitcase-medical", Rarity = "uncommon",
+    CarryWeight = 25, Weight = 2.5, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.MED),
+})
+
+armor("armor_back_tools", {
+    Name = "Werkzeugrucksack",
+    Description = "Rucksack der Pioniere für Werkzeug und Ersatzteile.",
+    Slot = "back", Model = P .. "backpack/backpack_clone_standart.mdl",
+    Icon = "fa-toolbox", Rarity = "uncommon",
+    CarryWeight = 20, Weight = 2.5, Size = { W = 2, H = 2 },
+    AllowedJobs = jobs(UNIT.ENG),
 })
 
 -- Hip --------------------------------------------------------
@@ -196,6 +357,24 @@ armor("armor_hip_cadet", {
     Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
     Icon = "fa-vest", Rarity = "common",
     Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
+})
+
+armor("armor_hip_heavy", {
+    Name = "Hüftpanzer (Schwer)",
+    Description = "Schwere Hüftplatten des Heavy-Zugs.",
+    Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
+    Icon = "fa-vest", Rarity = "rare",
+    Armor = 15, DamageReduction = 0.02, Weight = 2.5, Size = { W = 2, H = 1 },
+    AllowedJobs = jobs(UNIT.HEAVY),
+})
+
+armor("armor_hip_tools", {
+    Name = "Werkzeuggurt",
+    Description = "Gürtel mit Hüftplatten und Werkzeugtaschen der Pioniere.",
+    Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
+    Icon = "fa-screwdriver-wrench", Rarity = "uncommon",
+    Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
+    AllowedJobs = jobs(UNIT.ENG),
 })
 
 -- ============================================================

@@ -623,6 +623,25 @@ function INV.UnequipArmorSlot(ply, armorSlot)
     return true, "Rüstung abgelegt."
 end
 
+-- Used by the armory: wears a freshly issued armor piece if its slot is still
+-- empty. Returns true when the piece was put on.
+function INV.AutoEquipArmorItem(ply, itemID)
+    if armorConfig().AutoEquipFromArmory == false then return false end
+    local state = INV.GetState(ply)
+    if not state then return false end
+
+    local def = INV.GetItemDefinition(itemID)
+    local armorSlot = INV.GetArmorSlotForDefinition(def)
+    if not armorSlot or (state.armor and state.armor[armorSlot]) then return false end
+
+    for _, item in ipairs(state.items) do
+        if item.id == itemID and not isArmorEquipped(state, item.uid) then
+            return (INV.EquipArmorUID(ply, item.uid, armorSlot)) == true
+        end
+    end
+    return false
+end
+
 local function weaponStillEquipped(state, weaponClass, exceptUID)
     for slotName, uid in pairs(state.equipment) do
         if uid and uid ~= exceptUID then

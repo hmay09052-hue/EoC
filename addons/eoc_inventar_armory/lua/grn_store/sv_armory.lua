@@ -866,7 +866,14 @@ local function issueWeapon(ply, weaponData)
     ply.GRNArmoryIssuedItems = ply.GRNArmoryIssuedItems or {}
     ply.GRNArmoryIssuedItems[itemID] = (tonumber(ply.GRNArmoryIssuedItems[itemID]) or 0) + 1
 
+    -- Armor pieces are put on directly when their slot is still free.
+    local worn = def.Type == "armor" and isfunction(GRNInventory.AutoEquipArmorItem)
+        and GRNInventory.AutoEquipArmorItem(ply, itemID) or false
+
     if isfunction(GRNInventory.Sync) then GRNInventory.Sync(ply) end
+    if worn then
+        return true, tostring(weaponData.name or className) .. " angelegt.", true
+    end
     return true, tostring(weaponData.name or className) .. " ins Inventar gelegt.", true
 end
 
