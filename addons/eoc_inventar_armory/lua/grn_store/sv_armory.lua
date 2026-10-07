@@ -570,13 +570,41 @@ local function makeJobEquipmentData(itemID)
     return data
 end
 
+-- Kleiderschrank (A.Wardrobe): second terminal that only hands out armor.
+local function wardrobeConfig()
+    local W = A.Wardrobe
+    if istable(W) and W.Enabled ~= false and istable(W.Entity) then return W end
+    return nil
+end
+
+-- "weapons" (armory terminal), "armor" (wardrobe) or nil.
+function S.GetVendorMode(ent)
+    if not IsValid(ent) then return nil end
+    local class = ent:GetClass()
+    if class == tostring(A.Entity.Class or "grn_armory_terminal") then return "weapons" end
+    local W = wardrobeConfig()
+    if W and class == tostring(W.Entity.Class or "grn_armor_wardrobe") then return "armor" end
+    return nil
+end
+
+local function vendorEntityConfig(ent)
+    local W = wardrobeConfig()
+    if W and S.GetVendorMode(ent) == "armor" then return W.Entity end
+    return A.Entity
+end
+
 function S.BuildArmoryWeapons(ply)
     local out = {}
     local seenClass = {}
     local jobLoadout = S.GetCurrentJobLoadout(ply)
 
+    -- With a wardrobe on the server, armor is only handed out there.
+    local mode = S.GetVendorMode(IsValid(ply) and ply.GRNArmoryVendor or nil) or "weapons"
+    local splitArmor = wardrobeConfig() ~= nil
+
     local function append(data)
         if not istable(data) then return end
+        if splitArmor and (data.isArmor == true) ~= (mode == "armor") then return end
         local key = string.lower(tostring(data.className or ""))
         if key == "" or seenClass[key] then return end
         seenClass[key] = true
@@ -593,6 +621,8 @@ function S.BuildArmoryWeapons(ply)
             return out
         end
     end
+
+    if splitArmor and mode == "armor" then return out end
 
     local showBase = jobLoadout ~= nil or not istable(A.JobLoadouts) or A.JobLoadouts.ShowBaseWeaponsWithoutLoadout ~= false
 
@@ -749,7 +779,8 @@ local function buildPayload(ply)
     end
 
     return {
-        armoryName = tostring(A.Name or "Persönliche Waffenkammer"),
+        armoryName = S.GetVendorMode(ply.GRNArmoryVendor) == "armor" and tostring((A.Wardrobe and A.Wardrobe.Name) or "Kleiderschrank")
+            or tostring(A.Name or "Persönliche Waffenkammer"),
         serverName = GetHostName() or "ECHOES OF CLONES",
         weapons = list,
         sets = sets,
@@ -797,9 +828,9 @@ end
 function S.OpenArmoryForPlayer(ply, vendor)
     if not A.Enabled then return end
     if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() then return end
-    if not IsValid(vendor) or vendor:GetClass() ~= tostring(A.Entity.Class or "grn_armory_terminal") then return end
+    if not S.GetVendorMode(vendor) then return end
 
-    local useDistance = tonumber(A.Entity.UseDistance) or 180
+    local useDistance = tonumber(vendorEntityConfig(vendor).UseDistance) or 180
     if ply:GetPos():DistToSqr(vendor:GetPos()) > useDistance * useDistance then return end
 
     -- The armory is a separate terminal. If the inventory backpack animation
@@ -820,8 +851,8 @@ end
 local function canUseArmory(ply)
     if not A.Enabled or not IsValid(ply) or not ply:Alive() then return false end
     local vendor = ply.GRNArmoryVendor
-    if not IsValid(vendor) or vendor:GetClass() ~= tostring(A.Entity.Class or "grn_armory_terminal") then return false end
-    local maxDistance = tonumber(A.Entity.MenuMaxDistance) or 450
+    if not S.GetVendorMode(vendor) then return false end
+    local maxDistance = tonumber(vendorEntityConfig(vendor).MenuMaxDistance) or 450
     return ply:GetPos():DistToSqr(vendor:GetPos()) <= maxDistance * maxDistance
 end
 
@@ -896,18 +927,27 @@ local function returnIssuedWeapons(ply)
     local issued = ply.GRNArmoryIssuedItems or {}
     local count = 0
 
+    -- With a wardrobe, each terminal only takes back its own kind of items.
+    local mode = wardrobeConfig() and S.GetVendorMode(ply.GRNArmoryVendor) or nil
+    local function belongsHere(itemID)
+        if not mode then return true end
+        local def = GRNInventory.GetItemDefinition and GRNInventory.GetItemDefinition(itemID)
+        return (istable(def) and def.Type == "armor") == (mode == "armor")
+    end
+
     if GRNInventory and isfunction(GRNInventory.RemoveItem) then
         for itemID, quantity in pairs(issued) do
             itemID = tostring(itemID or "")
             quantity = math.max(0, math.floor(tonumber(quantity) or 0))
-            if itemID ~= "" and quantity > 0 then
+            if itemID ~= "" and quantity > 0 and belongsHere(itemID) then
                 count = count + math.max(0, tonumber(GRNInventory.RemoveItem(ply, itemID, quantity)) or 0)
+                issued[itemID] = nil
             end
         end
         if isfunction(GRNInventory.Sync) then GRNInventory.Sync(ply) end
     end
 
-    ply.GRNArmoryIssuedItems = {}
+    ply.GRNArmoryIssuedItems = issued
     return count
 end
 
@@ -1087,3 +1127,22 @@ function S.IsJobLoadoutItem(itemID)
     if not S._JobItemCache then S._JobItemCache = allConfiguredJobItemIDs() end
     return S._JobItemCache[tostring(itemID or "")] == true
 end
+
+concommand.Add("grn_wardrobe_spawn", function(ply)
+    if IsValid(ply) and not ply:IsSuperAdmin() then return end
+    local W = wardrobeConfig()
+    if not W then return end
+
+    local pos, ang = Vector(0, 0, 0), Angle(0, 0, 0)
+    if IsValid(ply) then
+        local tr = ply:GetEyeTrace()
+        pos = tr.HitPos + tr.HitNormal * 2
+        ang = Angle(0, ply:EyeAngles().y + 180, 0)
+    end
+
+    local ent = ents.Create(tostring(W.Entity.Class or "grn_armor_wardrobe"))
+    if not IsValid(ent) then return end
+    ent:SetPos(pos)
+    ent:SetAngles(ang)
+    ent:Spawn()
+end)

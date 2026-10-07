@@ -842,3 +842,32 @@ C.AllowedPurchaseTypes = {
 --     end
 -- end
 C.CustomGrantHandlers = C.CustomGrantHandlers or {}
+
+-- =========================================================
+-- KLEIDERSCHRANK (Rüstungsausgabe)
+-- =========================================================
+-- Eigene Entity für die Rüstung des Jobs. Sie nutzt dieselbe Oberfläche wie
+-- die Waffenkammer, zeigt aber nur die Rüstungsteile aus den Job-Loadouts
+-- (sh_job_loadouts.lua, ARMOR.*). Ist der Kleiderschrank aktiv, zeigt die
+-- Waffenkammer nur noch Waffen. Abgeholte Teile werden direkt angelegt.
+-- Aufstellen: Spawnmenü (Entities > GRN Store) oder Konsole grn_wardrobe_spawn.
+C.Armory.Wardrobe = {
+    Enabled = true,
+    Name = "Kleiderschrank",
+
+    Entity = {
+        Class = "grn_armor_wardrobe",
+        Model = "models/eemyscifipack/props/furniture/scifi_locker.mdl",
+        FallbackModel = "models/props_c17/Lockers001a.mdl",
+        UseDistance = 180,
+        MenuMaxDistance = 450,
+
+        -- Schild über dem Schrank
+        Label = "KLEIDERSCHRANK",
+        LabelOffset = 92,
+        LabelMaxDistance = 700,
+
+        Spawnable = true,
+        AdminOnly = true,
+    },
+}

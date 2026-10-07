@@ -104,17 +104,17 @@ KIT.AVP_NCO = J("arccw_k_dc15s", "arccw_k_dc15a", "arccw_k_dp23c", "weapon_cuff_
 
 -- ---------------------------------------------------------
 -- Rüstungssätze pro Einheit (Items aus grn_inventory/sh_armor.lua)
--- Reihenfolge: Kopf, Schulter, Brust, Rücken, Hüfte
+-- Reihenfolge: Kopf, Brust, Rücken, Hose
 -- ---------------------------------------------------------
 local ARMOR = {}
-ARMOR.T501  = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
-ARMOR.HEAVY = { "armor_helmet_heavy", "armor_shoulder_heavy", "armor_chest_heavy", "armor_back_standard", "armor_hip_heavy" }
-ARMOR.ARF   = { "armor_helmet_arf", "armor_shoulder_light", "armor_chest_light", "armor_back_arc", "armor_hip_cadet" }
-ARMOR.BARC  = { "armor_helmet_barc", "armor_shoulder_light", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
-ARMOR.AB    = { "armor_helmet_airborne", "armor_shoulder_standard", "armor_chest_standard", "armor_back_jetpack", "armor_hip_cadet" }
-ARMOR.MED   = { "armor_helmet_p1", "armor_shoulder_light", "armor_chest_medic", "armor_back_medic", "armor_hip_cadet" }
-ARMOR.ENG   = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_standard", "armor_back_tools", "armor_hip_tools" }
-ARMOR.ST    = { "armor_helmet_p1", "armor_shoulder_standard", "armor_chest_guard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.T501  = { "armor_helmet_p1", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.HEAVY = { "armor_helmet_heavy", "armor_chest_heavy", "armor_back_standard", "armor_hip_heavy" }
+ARMOR.ARF   = { "armor_helmet_arf", "armor_chest_light", "armor_back_arc", "armor_hip_cadet" }
+ARMOR.BARC  = { "armor_helmet_barc", "armor_chest_standard", "armor_back_standard", "armor_hip_cadet" }
+ARMOR.AB    = { "armor_helmet_airborne", "armor_chest_standard", "armor_back_jetpack", "armor_hip_cadet" }
+ARMOR.MED   = { "armor_helmet_p1", "armor_chest_medic", "armor_back_medic", "armor_hip_cadet" }
+ARMOR.ENG   = { "armor_helmet_p1", "armor_chest_standard", "armor_back_tools", "armor_hip_tools" }
+ARMOR.ST    = { "armor_helmet_p1", "armor_chest_guard", "armor_back_standard", "armor_hip_cadet" }
 ARMOR.NAVY  = { "armor_helmet_pilot", "armor_chest_light", "armor_hip_cadet" }
 
 -- Hängt einen Rüstungssatz an die genannten Waffen-Kits.

@@ -317,6 +317,11 @@ local function applyAppearance(ply, teamID, mdl, bodygroups)
             ply:SetBodygroup(bgID, math.Clamp(bgValue, 0, C.MaxBodygroupValue or 63))
         end
     end
+
+    -- Armor bodygroups (helmet, torso, legs, backpack) follow the worn armor.
+    if GRNInventory and isfunction(GRNInventory.ApplyArmorBodygroups) then
+        GRNInventory.ApplyArmorBodygroups(ply)
+    end
 end
 
 local function applySavedForCurrentJob(ply)

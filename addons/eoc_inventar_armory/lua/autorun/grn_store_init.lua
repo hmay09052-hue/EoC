@@ -15,6 +15,8 @@ if SERVER then
     AddCSLuaFile("entities/grn_store_terminal/cl_init.lua")
     AddCSLuaFile("entities/grn_armory_terminal/shared.lua")
     AddCSLuaFile("entities/grn_armory_terminal/cl_init.lua")
+    AddCSLuaFile("entities/grn_armor_wardrobe/shared.lua")
+    AddCSLuaFile("entities/grn_armor_wardrobe/cl_init.lua")
 
     include("grn_store/config.lua")
     include("grn_store/sh_job_loadouts.lua")

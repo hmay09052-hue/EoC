@@ -45,10 +45,9 @@ C.Armor = {
     -- Order inside a side follows the order of this list.
     Slots = {
         { ID = "head",     Label = "KOPF",     Side = "left",  Icon = "fa-helmet-safety", Hint = "Helm" },
-        { ID = "shoulder", Label = "SCHULTER", Side = "left",  Icon = "fa-shield",        Hint = "Schulterpanzer" },
         { ID = "chest",    Label = "BRUST",    Side = "left",  Icon = "fa-shirt",         Hint = "Brustpanzer" },
         { ID = "back",     Label = "RÜCKEN",   Side = "right", Icon = "fa-suitcase",      Hint = "Rucksack / Jetpack" },
-        { ID = "hip",      Label = "HÜFTE",    Side = "right", Icon = "fa-vest",          Hint = "Gürtel / Hüftpanzer" },
+        { ID = "hip",      Label = "HOSE",     Side = "right", Icon = "fa-socks",         Hint = "Beinpanzer / Hose" },
     },
 
     -- Character preview inside the inventory.
@@ -84,7 +83,7 @@ C.Armor = {
         Groups = {
             helmet   = { Slot = "head",  Names = { "helm", "helmet", "head", "kopf" } },
             torso    = { Slot = "chest", Names = { "oberteil", "torso", "chest", "brust", "upper" } },
-            legs     = { Slot = "hip",   Names = { "hose", "legs", "leg", "pants", "lower", "hip" } },
+            legs     = { Slot = "hip",   Names = { "hose", "hosen", "legs", "leg", "beine", "bein", "pants", "trousers", "unterteil", "lower", "bottom", "hip" } },
             backpack = { Slot = "back",  Names = { "rucksack", "backpack", "pack", "bag" } },
         },
 
@@ -129,7 +128,6 @@ C.Armor = {
     },
     IconCamera = {
         head     = { Bone = "ValveBiped.Bip01_Head1",     Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
-        shoulder = { Bone = "ValveBiped.Bip01_R_UpperArm", Radius = 10, Dir = Vector(0.6, -1, 0.25) },
         chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
         back     = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(-1, 0.35, 0.15) },
         hip      = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 15, Dir = Vector(1, 0.3, 0.05) },
@@ -301,38 +299,6 @@ armor("armor_helmet_arc", {
     IconModel = UNIT_MODEL.T501,
 })
 
--- Shoulder ---------------------------------------------------
--- Kein Nevelgrad-Model für Schulterteile: Symbol = FontAwesome-Icon.
-armor("armor_shoulder_standard", {
-    Name = "Schulterpanzer (Standard)",
-    Description = "Plastoid-Schulterplatten der Klon-Infanterie.",
-    Slot = "shoulder",
-    Icon = "fa-shield", Rarity = "common",
-    Armor = 10, Weight = 1.5, Size = { W = 1, H = 1 },
-    AllowedJobs = jobs(UNIT.T501, UNIT.AB, UNIT.ENG, UNIT.ST),
-    IconModel = UNIT_MODEL.T501,
-})
-
-armor("armor_shoulder_heavy", {
-    Name = "Schulterpanzer (Schwer)",
-    Description = "Verstärkte Schulterplatten des Heavy-Zugs.",
-    Slot = "shoulder",
-    Icon = "fa-shield", Rarity = "rare",
-    Armor = 20, DamageReduction = 0.03, Weight = 3.0, Size = { W = 1, H = 1 },
-    AllowedJobs = jobs(UNIT.HEAVY),
-    IconModel = UNIT_MODEL.HEAVY,
-})
-
-armor("armor_shoulder_light", {
-    Name = "Schulterpanzer (Leicht)",
-    Description = "Leichte Schulterplatten für Aufklärer und Sanitäter.",
-    Slot = "shoulder",
-    Icon = "fa-shield", Rarity = "common",
-    Armor = 5, Weight = 1.0, Size = { W = 1, H = 1 },
-    AllowedJobs = jobs(UNIT.ARF, UNIT.BARC, UNIT.MED),
-    IconModel = UNIT_MODEL.ARF,
-})
-
 -- Chest ------------------------------------------------------
 armor("armor_chest_standard", {
     Name = "Klon-Brustpanzer",
@@ -433,10 +399,10 @@ armor("armor_back_tools", {
     IconModel = UNIT_MODEL.ENG,
 })
 
--- Hip --------------------------------------------------------
+-- Hose (Slot "hip") ----------------------------------------
 armor("armor_hip_cadet", {
-    Name = "Kadetten-Hüftpanzer",
-    Description = "Ausrüstungsgürtel mit Hüftplatten.",
+    Name = "Panzerhose (Standard)",
+    Description = "Plastoid-Beinpanzer der Klon-Infanterie.",
     Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
     Icon = "fa-vest", Rarity = "common",
     Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
@@ -444,8 +410,8 @@ armor("armor_hip_cadet", {
 })
 
 armor("armor_hip_heavy", {
-    Name = "Hüftpanzer (Schwer)",
-    Description = "Schwere Hüftplatten des Heavy-Zugs.",
+    Name = "Panzerhose (Schwer)",
+    Description = "Schwerer Beinpanzer des Heavy-Zugs.",
     Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
     Icon = "fa-vest", Rarity = "rare",
     Armor = 15, DamageReduction = 0.02, Weight = 2.5, Size = { W = 2, H = 1 },
@@ -454,8 +420,8 @@ armor("armor_hip_heavy", {
 })
 
 armor("armor_hip_tools", {
-    Name = "Werkzeuggurt",
-    Description = "Gürtel mit Hüftplatten und Werkzeugtaschen der Pioniere.",
+    Name = "Panzerhose (Pionier)",
+    Description = "Beinpanzer der Pioniere mit Werkzeugtaschen.",
     Slot = "hip", Model = P .. "hip/hip_clone_cadet.mdl",
     Icon = "fa-screwdriver-wrench", Rarity = "uncommon",
     Armor = 10, Weight = 1.5, Size = { W = 2, H = 1 },
@@ -531,15 +497,25 @@ function INV.ResolveArmorBodygroups(ent)
         names[i] = string.lower(tostring(ent:GetBodygroupName(i) or ""))
     end
 
-    local out = {}
-    for key, values in pairs(profile.Values or {}) do
+    -- Fixed indices first, then name search; one bodygroup per key.
+    local keys = {}
+    for key, values in pairs(profile.Values or {}) do keys[#keys + 1] = key end
+    table.sort(keys, function(a, b)
+        local fa, fb = profile.Values[a].Index ~= nil, profile.Values[b].Index ~= nil
+        if fa ~= fb then return fa end
+        return a < b
+    end)
+
+    local out, used = {}, {}
+    for _, key in ipairs(keys) do
+        local values = profile.Values[key]
         local group = istable(cfg.Groups) and cfg.Groups[key] or nil
         local index = tonumber(values.Index)
         if not index and group then
             for _, wanted in ipairs(group.Names or {}) do
                 wanted = string.lower(tostring(wanted))
                 for i, name in pairs(names) do
-                    if name == wanted then index = i break end
+                    if name == wanted and not used[i] then index = i break end
                 end
                 if index then break end
             end
@@ -547,13 +523,14 @@ function INV.ResolveArmorBodygroups(ent)
                 for _, wanted in ipairs(group.Names or {}) do
                     wanted = string.lower(tostring(wanted))
                     for i, name in pairs(names) do
-                        if string.find(name, wanted, 1, true) then index = i break end
+                        if not used[i] and string.find(name, wanted, 1, true) then index = i break end
                     end
                     if index then break end
                 end
             end
         end
         if index and group and names[index] then
+            used[index] = true
             out[key] = { index = index, on = tonumber(values.On) or 0, off = tonumber(values.Off) or 0, slot = group.Slot }
         end
     end
