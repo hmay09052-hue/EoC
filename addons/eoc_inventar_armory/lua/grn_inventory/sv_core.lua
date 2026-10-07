@@ -542,10 +542,36 @@ function INV.ApplyArmorBodygroups(ply, state)
     local groups = INV.ResolveArmorBodygroups(ply)
     if not groups then return end
 
-    local enabled = armorConfig().Enabled ~= false
-    for _, group in pairs(groups) do
-        local worn = enabled and group.slot and state.armor and state.armor[group.slot] ~= nil
-        local value = worn and group.on or group.off
+    -- Worn pieces: slot -> definition, item id -> definition.
+    local bySlot, byID = {}, {}
+    if armorConfig().Enabled ~= false then
+        for armorSlot, uid in pairs(state.armor or {}) do
+            local item = findItemByUID(state, uid)
+            local def = item and INV.GetItemDefinition(item.id)
+            if def then
+                bySlot[armorSlot] = def
+                byID[item.id] = def
+            end
+        end
+    end
+
+    for key, group in pairs(groups) do
+        local def
+        if group.slot then def = bySlot[group.slot] end
+        if not def and group.items then
+            for id in pairs(group.items) do
+                if byID[id] then def = byID[id] break end
+            end
+        end
+        if def and group.requires and not bySlot[group.requires] then def = nil end
+
+        local value = group.off
+        if def then
+            -- An item may use its own "on" value (e.g. jetpack = backpack 2).
+            local override = istable(def.PlayerBodygroups) and tonumber(def.PlayerBodygroups[key]) or nil
+            value = override or group.on
+            if override and override >= ply:GetBodygroupCount(group.index) then value = group.on end
+        end
         if value >= 0 and value < ply:GetBodygroupCount(group.index) and ply:GetBodygroup(group.index) ~= value then
             ply:SetBodygroup(group.index, value)
         end

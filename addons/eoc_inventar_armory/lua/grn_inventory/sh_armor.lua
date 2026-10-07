@@ -45,6 +45,7 @@ C.Armor = {
     -- Order inside a side follows the order of this list.
     Slots = {
         { ID = "head",     Label = "KOPF",     Side = "left",  Icon = "fa-helmet-safety", Hint = "Helm" },
+        { ID = "accessory", Label = "ZUBEHÖR", Side = "left",  Icon = "fa-binoculars",    Hint = "Helm-Zubehör (nur mit Helm sichtbar)" },
         { ID = "chest",    Label = "BRUST",    Side = "left",  Icon = "fa-shirt",         Hint = "Brustpanzer" },
         { ID = "back",     Label = "RÜCKEN",   Side = "right", Icon = "fa-suitcase",      Hint = "Rucksack / Jetpack" },
         { ID = "hip",      Label = "HOSE",     Side = "right", Icon = "fa-socks",         Hint = "Beinpanzer / Hose" },
@@ -85,10 +86,18 @@ C.Armor = {
             torso    = { Slot = "chest", Names = { "oberteil", "torso", "chest", "brust", "upper" } },
             legs     = { Slot = "hip",   Names = { "hose", "hosen", "legs", "leg", "beine", "bein", "pants", "trousers", "unterteil", "lower", "bottom", "hip" } },
             backpack = { Slot = "back",  Names = { "rucksack", "backpack", "pack", "bag" } },
+
+            -- Helm-Zubehör: an, wenn eines der Items im Slot "accessory" steckt
+            -- UND ein Helm getragen wird (Requires).
+            macrobinoculars = { Items = { "armor_acc_macrobinoculars" }, Requires = "head", Names = { "macrobinoculars", "macrobinocular", "binocular", "fernglas" } },
+            rangefinder     = { Items = { "armor_acc_rangefinder" },     Requires = "head", Names = { "rangefinder", "entfernungsmesser" } },
+            sunvisor        = { Items = { "armor_acc_sunvisor" },        Requires = "head", Names = { "sunvisor", "visor", "sonnenblende" } },
         },
 
         -- Werte pro Model-Gruppe. Match = Anfang des Model-Pfads.
         -- Optional pro Gruppe Index = <Nummer>, falls die Namenssuche nicht passt.
+        -- Ein Item kann seinen eigenen "An"-Wert setzen: PlayerBodygroups = { backpack = 2 }
+        -- (z. B. das Jetpack der Airborne).
         Profiles = {
             {
                 Name = "501st",
@@ -98,6 +107,9 @@ C.Armor = {
                     torso    = { On = 0, Off = 2 },
                     legs     = { On = 0, Off = 1 },
                     backpack = { On = 1, Off = 0 },
+                    macrobinoculars = { On = 1, Off = 0 },
+                    rangefinder     = { On = 1, Off = 0 },
+                    sunvisor        = { On = 0, Off = 1 },
                 },
             },
             {
@@ -113,8 +125,10 @@ C.Armor = {
         },
     },
 
-    -- Bilder der Rüstungsteile: gerendert aus dem Job-Model (alle Teile "On"),
-    -- herangezoomt auf die Körperstelle des Slots. Radius = Bildausschnitt.
+    -- Bilder der Rüstungsteile: ist das Nevelgrad-Model eines Items (Model)
+    -- installiert, wird es direkt gerendert. Sonst wird das Bild aus dem
+    -- Job-Model (IconModel, alle Teile "On") gerendert und auf die Körperstelle
+    -- des Slots gezoomt. Radius = Bildausschnitt.
     UnitModels = {
         T501  = "models/silent/501st_ph1/trooper/trooper_v2/501st_trooper_v2.mdl",
         HEAVY = "models/silent/501st_ph1/ht/ht_v1/501st_ht_v1.mdl",
@@ -128,6 +142,7 @@ C.Armor = {
     },
     IconCamera = {
         head     = { Bone = "ValveBiped.Bip01_Head1",     Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
+        accessory = { Bone = "ValveBiped.Bip01_Head1",    Radius = 9,  Dir = Vector(1, 0.35, 0.12) },
         chest    = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(1, 0.3, 0.1) },
         back     = { Bone = "ValveBiped.Bip01_Spine2",    Radius = 17, Dir = Vector(-1, 0.35, 0.15) },
         hip      = { Bone = "ValveBiped.Bip01_Pelvis",    Radius = 15, Dir = Vector(1, 0.3, 0.05) },
@@ -243,7 +258,7 @@ armor("armor_helmet_p1", {
 armor("armor_helmet_arf", {
     Name = "ARF-Helm",
     Description = "Helm der Advanced Recon Force mit integriertem Scanner-Visier.",
-    Slot = "head", Model = P .. "helmet/helmet_clone_p1_arf.mdl",
+    Slot = "head", Model = P .. "helmet/helmet_clone_p2_arf.mdl",
     Icon = "fa-helmet-safety", Rarity = "uncommon",
     Armor = 15, DamageReduction = 0.02, Weight = 2.0, Size = { W = 1, H = 1 },
     AllowedJobs = jobs(UNIT.ARF),
@@ -296,6 +311,37 @@ armor("armor_helmet_arc", {
     Slot = "head", Model = P .. "helmet/helmet_clone_arc.mdl",
     Icon = "fa-helmet-safety", Rarity = "epic",
     Armor = 25, DamageReduction = 0.05, Weight = 2.5, Size = { W = 1, H = 1 },
+    IconModel = UNIT_MODEL.T501,
+})
+
+-- Helm-Zubehör (Slot "accessory") ---------------------------
+-- Sichtbar nur zusammen mit einem Helm. Keine Werte, nur Optik.
+local ACC = P .. "accessories/"
+
+armor("armor_acc_macrobinoculars", {
+    Name = "Makrofernglas",
+    Description = "Am Helm befestigtes Makrofernglas.",
+    Slot = "accessory", Model = ACC .. "accessories_clone_macrobinoculars.mdl",
+    Icon = "fa-binoculars", Rarity = "uncommon",
+    Weight = 0.5, Size = { W = 1, H = 1 },
+    IconModel = UNIT_MODEL.T501,
+})
+
+armor("armor_acc_rangefinder", {
+    Name = "Entfernungsmesser",
+    Description = "Ausklappbarer Entfernungsmesser am Helm.",
+    Slot = "accessory", Model = ACC .. "accessories_clone_rangefinder.mdl",
+    Icon = "fa-crosshairs", Rarity = "uncommon",
+    Weight = 0.5, Size = { W = 1, H = 1 },
+    IconModel = UNIT_MODEL.T501,
+})
+
+armor("armor_acc_sunvisor", {
+    Name = "Sonnenblende",
+    Description = "Sonnenblende über dem Helmvisier.",
+    Slot = "accessory", Model = ACC .. "accessories_clone_sunvisor.mdl",
+    Icon = "fa-sun", Rarity = "common",
+    Weight = 0.3, Size = { W = 1, H = 1 },
     IconModel = UNIT_MODEL.T501,
 })
 
@@ -367,6 +413,7 @@ armor("armor_back_jetpack", {
     Armor = 5, CarryWeight = 5, Weight = 4.0, Size = { W = 2, H = 2 },
     AllowedJobs = jobs(UNIT.AB),
     IconModel = UNIT_MODEL.AB,
+    PlayerBodygroups = { backpack = 2 }, -- Airborne-Model: Rucksack-Bodygroup 2 = Jetpack
 })
 
 armor("armor_back_arc", {
@@ -480,7 +527,7 @@ function INV.GetArmorBodygroupProfile(model)
 end
 
 -- Finds the armor bodygroups on an entity (player or clientside model).
--- Returns { [groupKey] = { index, on, off, slot } } (cached per model).
+-- Returns { [groupKey] = { index, on, off, slot, items, requires } } (cached per model).
 local bodygroupCache, bodygroupCacheCfg = {}, nil
 function INV.ResolveArmorBodygroups(ent)
     if not IsValid(ent) then return nil end
@@ -531,7 +578,13 @@ function INV.ResolveArmorBodygroups(ent)
         end
         if index and group and names[index] then
             used[index] = true
-            out[key] = { index = index, on = tonumber(values.On) or 0, off = tonumber(values.Off) or 0, slot = group.Slot }
+            local items
+            if istable(group.Items) then
+                items = {}
+                for _, id in ipairs(group.Items) do items[id] = true end
+            end
+            out[key] = { index = index, on = tonumber(values.On) or 0, off = tonumber(values.Off) or 0,
+                slot = group.Slot, items = items, requires = group.Requires }
         end
     end
 

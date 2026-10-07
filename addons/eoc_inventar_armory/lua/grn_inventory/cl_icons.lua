@@ -203,11 +203,19 @@ function INV.RequestItemIcon(itemID, callback)
     if def.Type == "weapon" and C.Armor and C.Armor.RenderWeaponIcons == false then return end
 
     local model = INV.GetIconModel(def)
-    if not model then return end
 
-    -- Armor pictured on a job model: zoom onto the body part of its slot.
-    local camera = def.Type == "armor" and C.Armor and istable(C.Armor.IconCamera) and C.Armor.IconCamera[tostring(def.Slot or "")] or nil
-    if camera and not INV.GetArmorBodygroupProfile(model) then camera = nil end
+    -- Armor: the piece's own (Nevelgrad) model when it is installed, otherwise
+    -- the job model, zoomed onto the body part of its slot.
+    local camera
+    if def.Type == "armor" then
+        if isstring(def.Model) and def.Model ~= "" and util.IsValidModel(def.Model) then
+            model = def.Model
+        else
+            camera = C.Armor and istable(C.Armor.IconCamera) and C.Armor.IconCamera[tostring(def.Slot or "")] or nil
+            if camera and not (model and INV.GetArmorBodygroupProfile(model)) then camera = nil end
+        end
+    end
+    if not model then return end
 
     return INV.RequestModelIcon(model, {
         kind = def.Type == "weapon" and "weapon" or "armor",

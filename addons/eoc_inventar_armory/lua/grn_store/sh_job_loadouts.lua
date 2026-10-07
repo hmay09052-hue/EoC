@@ -117,6 +117,12 @@ ARMOR.ENG   = { "armor_helmet_p1", "armor_chest_standard", "armor_back_tools", "
 ARMOR.ST    = { "armor_helmet_p1", "armor_chest_guard", "armor_back_standard", "armor_hip_cadet" }
 ARMOR.NAVY  = { "armor_helmet_pilot", "armor_chest_light", "armor_hip_cadet" }
 
+-- Helm-Zubehör: jede 501st-Einheit kann sich eins davon im Kleiderschrank nehmen.
+local HELMET_ACC = { "armor_acc_macrobinoculars", "armor_acc_rangefinder", "armor_acc_sunvisor" }
+for _, unit in ipairs({ "T501", "HEAVY", "ARF", "BARC", "AB", "MED", "ENG" }) do
+    ARMOR[unit] = merge(ARMOR[unit], HELMET_ACC)
+end
+
 -- Hängt einen Rüstungssatz an die genannten Waffen-Kits.
 local function withArmor(armorKit, ...)
     for _, kitName in ipairs({ ... }) do
