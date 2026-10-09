@@ -16,6 +16,16 @@ C.ReplaceCustomizeMenu = true
 -- nicht wieder angebracht werden, wenn sie nicht freigegeben sind.
 C.EnforceWhitelist = true
 
+-- UI-Sounds ("" = aus)
+C.Sounds = {
+    open = "weapons/arccw/extra.wav",
+    close = "weapons/arccw/extra2.wav",
+    click = "ui/buttonclick.wav",
+    hover = "ui/buttonrollover.wav",
+    equip = "",
+    error = "items/medshotno1.wav",
+}
+
 -- Admins dürfen auch nicht freigegebene Aufsätze anbringen.
 C.AdminsBypassWhitelist = false
 

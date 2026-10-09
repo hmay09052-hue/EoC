@@ -220,8 +220,16 @@ function M.Refresh(force)
     push(force)
 end
 
+-- Eigene UI-Sounds (Standard-Sounds von GMod/ArcCW), siehe C.Sounds.
+local lastHover = 0
 local function playSound(kind)
-    if GRNInventory and isfunction(GRNInventory.PlayUISound) then GRNInventory.PlayUISound(kind) end
+    kind = string.lower(tostring(kind or ""))
+    if kind == "hover" then
+        if RealTime() - lastHover < 0.06 then return end
+        lastHover = RealTime()
+    end
+    local path = (C.Sounds or {})[kind]
+    if path and path ~= "" then surface.PlaySound(path) end
 end
 
 function M.CloseMenu(fromWeapon)
