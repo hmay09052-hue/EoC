@@ -21,6 +21,10 @@ if SERVER then
 
 
     resource.AddFile("resource/fonts/agencyfb.ttf")
+    local aurebesh = "resource/fonts/" .. (SSE.Config.HUDAurebeshFile or "")
+    if SSE.Config.HUDShowAurebesh and file.Exists(aurebesh, "GAME") then
+        resource.AddFile(aurebesh)
+    end
     
 end
 

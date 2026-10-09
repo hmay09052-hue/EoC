@@ -322,18 +322,74 @@ end
 
 
 
-local interactbind = input.LookupBinding( "use" )
+local hudAurebesh
+local function HUDAurebeshFont()
+    if hudAurebesh == nil then
+        hudAurebesh = false
+        if SSE.Config.HUDShowAurebesh and file.Exists("resource/fonts/" .. (SSE.Config.HUDAurebeshFile or ""), "GAME") then
+            hudAurebesh = SSE.xFont("!" .. SSE.Config.HUDAurebeshFont .. "@22#500")
+        end
+    end
+    return hudAurebesh
+end
+
+local function HUDGradientBox(x, y, w, h, col)
+    local steps = 12
+    local stepH = h / steps
+    for i = 0, steps - 1 do
+        -- oben kräftiger, nach unten etwas heller
+        surface.SetDrawColor(col.r, col.g, col.b, col.a * (1 - i / steps * 0.35))
+        surface.DrawRect(x, math.floor(y + i * stepH), w, math.ceil(stepH))
+    end
+end
+
 function SSE:TraceEntityHUD()
 
     local ent = LocalPlayer():GetEyeTrace().Entity
     if !IsValid(ent) then return end
     if ent:IsWorld() then return end
     if ent:GetPos():DistToSqr(LocalPlayer():GetPos()) > SSE.Config.HUDDistance*SSE.Config.HUDDistance then return end
+    if !ent.SSE_HUDName then return end
 
-    if ent.SSE_HUDName then
-        SSE:DrawTextShadow(ent.SSE_HUDName or "", SSE.xFont("!Agency FB@45#1000"), ScrW()/2,ScrH()/2-SSEH(30), Color(255,255,255), TEXT_ALIGN_CENTER)
-        SSE:DrawTextShadow(string.format(SSE.Config.HUDInteractLang ,string.upper(interactbind)),SSE.xFont("!Agency FB@35#1"), ScrW()/2,ScrH()/2, Color(255,255,255), TEXT_ALIGN_CENTER)
+    local name = string.upper(ent.SSE_HUDName)
+    local key = string.upper(input.LookupBinding("use") or "E")
+    local prompt = string.format(SSE.Config.HUDInteractLang, key)
+
+    local nameFont = SSE.xFont("!Agency FB@52#1000")
+    local promptFont = SSE.xFont("!Roboto Condensed@22#700")
+    local aureFont = HUDAurebeshFont()
+
+    surface.SetFont(nameFont)
+    local nameW, nameH = surface.GetTextSize(name)
+    local aureW, aureH = 0, 0
+    if aureFont then
+        surface.SetFont(aureFont)
+        aureW, aureH = surface.GetTextSize(name)
     end
+    surface.SetFont(promptFont)
+    local promptW, promptH = surface.GetTextSize(prompt)
+
+    local cx = ScrW() / 2
+    local padX, padY = SSEW(14), SSEH(4)
+
+    -- Name (+ Aurebesh) auf dunklem Kasten
+    local boxW = math.max(nameW, aureW) + padX * 2
+    local boxH = nameH + aureH + padY * 2
+    local boxY = ScrH() / 2 - SSEH(40)
+    HUDGradientBox(cx - boxW / 2, boxY, boxW, boxH, SSE.Config.HUDBoxColor)
+    SSE:DrawTextShadow(name, nameFont, cx, boxY + padY, color_white, TEXT_ALIGN_CENTER)
+    if aureFont then
+        draw.SimpleText(name, aureFont, cx, boxY + padY + nameH, Color(200, 200, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    end
+
+    -- "Drücke [E] zum Interagieren!" mit orangem Rand
+    local pW, pH = promptW + padX * 2, promptH + SSEH(10)
+    local pX, pY = cx - pW / 2, boxY + boxH + SSEH(6)
+    surface.SetDrawColor(SSE.Config.HUDPromptColor)
+    surface.DrawRect(pX, pY, pW, pH)
+    surface.SetDrawColor(SSE.Config.HUDAccentColor)
+    surface.DrawOutlinedRect(pX, pY, pW, pH, 1)
+    SSE:DrawTextShadow(prompt, promptFont, cx, pY + (pH - promptH) / 2, color_white, TEXT_ALIGN_CENTER)
 end
 
 hook.Add("HUDPaint", "SSE.HudPaint", function()

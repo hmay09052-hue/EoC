@@ -4,6 +4,16 @@ SSE.Config.ButtonFont = "!Agency FB@40#1"
 SSE.Config.HUDDistance = 300
 SSE.Config.HUDInteractLang = "Drücke [%s] zum Interagieren!"
 
+-- Aussehen des Hinweises, wenn man ein SSE-Objekt anschaut
+SSE.Config.HUDBoxColor = Color(8, 10, 14, 200)       -- Hintergrund hinter dem Namen
+SSE.Config.HUDPromptColor = Color(10, 12, 16, 225)   -- Hintergrund der "Drücke [E]"-Zeile
+SSE.Config.HUDAccentColor = Color(252, 178, 73)      -- oranger Rand um die "Drücke [E]"-Zeile
+-- Aurebesh-Zeile unter dem Namen. Wird nur angezeigt, wenn die Schriftdatei
+-- im Addon liegt (resource/fonts/<HUDAurebeshFile>). Font = Name der Schrift in der .ttf.
+SSE.Config.HUDShowAurebesh = true
+SSE.Config.HUDAurebeshFile = "aurebesh.ttf"
+SSE.Config.HUDAurebeshFont = "Aurebesh"
+
 
 
 SSE.Config.Boards = {} -- Dont Touch this unless you know what you're doing!
