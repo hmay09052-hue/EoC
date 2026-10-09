@@ -22,8 +22,7 @@ EOC_KENNEN.Config = {
     -- Falls jemand keine RP-ID hat
     UnknownFallback = "Unbekannt",
 
-    -- Diese Benutzergruppen sehen immer alle Namen
-    SeeAllGroups = {
-        superadmin = true,
-    },
+    -- Diese Benutzergruppen sehen immer alle Namen, z.B. { superadmin = true }
+    -- Standardmäßig leer, sonst sieht man beim Testen als Superadmin alle Namen.
+    SeeAllGroups = {},
 }

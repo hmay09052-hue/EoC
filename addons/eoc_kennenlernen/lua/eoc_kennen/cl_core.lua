@@ -170,7 +170,25 @@ hook.Add("Initialize", "EOC_Kennen_Overrides", K.InstallOverrides)
 hook.Add("InitPostEntity", "EOC_Kennen_Overrides", function()
     K.InstallOverrides()
     -- Manche Addons (z.B. AtlasChat) ersetzen Funktionen erst später
-    timer.Simple(5, K.InstallOverrides)
-    timer.Simple(30, K.InstallOverrides)
+    -- Manche Addons laden ihre Funktionen erst spät (z.B. KF-Framework), deshalb regelmäßig prüfen.
+    -- Wrapper werden nur neu gesetzt, wenn jemand die Funktion inzwischen ersetzt hat.
+    timer.Create("EOC_Kennen_Overrides", 5, 0, K.InstallOverrides)
 end)
 if GAMEMODE then K.InstallOverrides() end
+
+-- Debug: eoc_kennen_debug in der Konsole
+concommand.Add("eoc_kennen_debug", function()
+    local lp = LocalPlayer()
+    print("[EoC Kennenlernen] Mein Charakter: " .. K.GetCharID(lp) .. " | Liste gehört zu: " .. K.KnownFor
+        .. " | Gruppe: " .. lp:GetUserGroup() .. (K.CanSeeAll(lp) and " (sieht ALLE Namen)" or ""))
+    print("  Bekannte Charaktere: " .. table.concat(table.GetKeys(K.Known), ", "))
+    for _, fn in ipairs({ "Nick", "Name", "GetName", "getDarkRPVar", "BuildDisplayName", "GetPlayerName", "AddText" }) do
+        print("  Wrapper " .. fn .. ": " .. (K.Wrapped[fn] and "aktiv" or "FEHLT"))
+    end
+    for _, ply in ipairs(player.GetAll()) do
+        if ply ~= lp then
+            print("  " .. K.RealName(ply) .. " -> " .. ply:Nick() .. " (Char " .. K.GetCharID(ply) .. ", "
+                .. (K.KnowsPlayer(ply) and "bekannt" or "unbekannt") .. ")")
+        end
+    end
+end)
