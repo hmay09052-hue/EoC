@@ -21,6 +21,9 @@ if SERVER then
 
 
     resource.AddFile("resource/fonts/agencyfb.ttf")
+    if file.Exists("resource/fonts/aurebesh.ttf", "GAME") then
+        resource.AddFile("resource/fonts/aurebesh.ttf")
+    end
     
 end
 

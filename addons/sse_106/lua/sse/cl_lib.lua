@@ -322,23 +322,74 @@ end
 
 
 
-local interactbind = input.LookupBinding( "use" )
+local matGradUp = Material("gui/gradient_up")
+local matGradCenter = Material("gui/center_gradient")
+
+local hudAlpha = 0
+local hudEnt
+
+local function drawShadowText(text, font, x, y, col, alpha)
+    draw.SimpleText(text, font, x + 2, y + 2, Color(0, 0, 0, 200 * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    draw.SimpleText(text, font, x, y, ColorAlpha(col, col.a * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+end
+
 function SSE:TraceEntityHUD()
 
     local ent = LocalPlayer():GetEyeTrace().Entity
-    if !IsValid(ent) then return end
-    if ent:IsWorld() then return end
-    if ent:GetPos():DistToSqr(LocalPlayer():GetPos()) > SSE.Config.HUDDistance*SSE.Config.HUDDistance then return end
+    local visible = IsValid(ent) and !ent:IsWorld() and ent.SSE_HUDName
+        and ent:GetPos():DistToSqr(LocalPlayer():GetPos()) <= SSE.Config.HUDDistance*SSE.Config.HUDDistance
 
-    if ent.SSE_HUDName then
-        SSE:DrawTextShadow(ent.SSE_HUDName or "", SSE.xFont("!Agency FB@45#1000"), ScrW()/2,ScrH()/2-SSEH(30), Color(255,255,255), TEXT_ALIGN_CENTER)
-        SSE:DrawTextShadow(string.format(SSE.Config.HUDInteractLang ,string.upper(interactbind)),SSE.xFont("!Agency FB@35#1"), ScrW()/2,ScrH()/2, Color(255,255,255), TEXT_ALIGN_CENTER)
-    end
+    if visible then hudEnt = ent end
+    hudAlpha = math.Approach(hudAlpha, visible and 1 or 0, FrameTime() * 6)
+    if hudAlpha <= 0 or !IsValid(hudEnt) then return end
+
+    local cfg = SSE.Config.HUD
+    local name = hudEnt.SSE_HUDName or ""
+    local interactbind = string.upper(input.LookupBinding("use") or "E")
+    local interactText = string.format(SSE.Config.HUDInteractLang, interactbind)
+
+    local titleFont = SSE.xFont(cfg.TitleFont)
+    local aureFont = SSE.xFont(cfg.AurebeshFont)
+    local interactFont = SSE.xFont(cfg.InteractFont)
+
+    surface.SetFont(titleFont)
+    local tw, th = surface.GetTextSize(name)
+    surface.SetFont(aureFont)
+    local aw, ah = surface.GetTextSize(name)
+    surface.SetFont(interactFont)
+    local iw, ih = surface.GetTextSize(interactText)
+
+    local padX, padY, gap = SSEW(14), SSEH(8), SSEH(2)
+    local w = math.max(tw, aw, iw) + padX * 2
+    local h = th + ah + ih + gap * 2 + padY * 2
+    local x = math.floor(ScrW() / 2 - w / 2)
+    local y = math.floor(ScrH() / 2 - SSEH(30))
+
+    -- Hintergrund
+    surface.SetDrawColor(ColorAlpha(cfg.Background, cfg.Background.a * hudAlpha))
+    surface.DrawRect(x, y, w, h)
+    surface.SetMaterial(matGradUp)
+    surface.SetDrawColor(0, 0, 0, 120 * hudAlpha)
+    surface.DrawTexturedRect(x, y, w, h)
+
+    -- Akzentlinie unten
+    surface.SetMaterial(matGradCenter)
+    surface.SetDrawColor(ColorAlpha(cfg.Accent, cfg.Accent.a * hudAlpha))
+    surface.DrawTexturedRect(x, y + h - 2, w, 2)
+
+    local cx = ScrW() / 2
+    local cy = y + padY
+    drawShadowText(name, titleFont, cx, cy, cfg.TitleColor, hudAlpha)
+    cy = cy + th + gap
+    drawShadowText(name, aureFont, cx, cy, cfg.AurebeshColor, hudAlpha)
+    cy = cy + ah + gap
+    drawShadowText(interactText, interactFont, cx, cy, cfg.InteractColor, hudAlpha)
 end
 
 hook.Add("HUDPaint", "SSE.HudPaint", function()
     SSE:TraceEntityHUD()
 end)
+
 
 
 

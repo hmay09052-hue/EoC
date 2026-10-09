@@ -4,6 +4,18 @@ SSE.Config.ButtonFont = "!Agency FB@40#1"
 SSE.Config.HUDDistance = 300
 SSE.Config.HUDInteractLang = "Drücke [%s] zum interagieren!"
 
+-- Design der Interaktions-Anzeige (wenn man ein SSE-Entity ansieht)
+SSE.Config.HUD = {
+    TitleFont = "!Agency FB@45#1000",
+    AurebeshFont = "!Aurebesh@22#500", -- benötigt resource/fonts/aurebesh.ttf (Schriftname "Aurebesh")
+    InteractFont = "!Roboto@22#800",
+    TitleColor = Color(255, 255, 255),
+    AurebeshColor = Color(235, 235, 235),
+    InteractColor = Color(255, 255, 255),
+    Background = Color(15, 15, 18, 170),
+    Accent = Color(230, 150, 50, 200),
+}
+
 
 
 SSE.Config.Boards = {} -- Dont Touch this unless you know what you're doing!
