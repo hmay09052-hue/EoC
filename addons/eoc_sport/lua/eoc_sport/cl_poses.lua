@@ -1,36 +1,44 @@
 EoCSport = EoCSport or {}
 
 --[[
-Bone-Posen für die Übungen (Weg B/C aus dem Konzept).
+Posen für die Übungen.
 
-Jede Pose besteht aus
+Körper:
   pitch  Neigung des ganzen Körpers in Grad (90 = flach auf dem Bauch,
          -90 = flach auf dem Rücken)
   pivot  Höhe des Drehpunkts über den Füßen (0 = Füße, ~38 = Hüfte)
   dz/dx  Verschiebung nach oben / vorn
-  bones  Bone-Winkel (ManipulateBoneAngles) relativ zur Stand-Animation.
-         Kurznamen ohne "ValveBiped.Bip01_" sind erlaubt.
 
-Die Werte sind Startwerte für ValveBiped-Models (Klon-Models). Feinjustieren
-geht im Spiel mit eoc_sport_posetool (Admins): Werte live ändern, mit
-"Als Lua kopieren" in die Zwischenablage holen und hier einfügen.
+aim (Arme, Beine, Wirbelsäule):
+  Richtung, in die das Glied zeigen soll, als V(vorn, links, oben).
+  Beispiel: V(0, 0, -1) = senkrecht nach unten, V(1, 0, 0) = nach vorn.
+  Der Bone-Winkel wird im Spiel aus der echten Lage des Models berechnet,
+  deshalb passen die Richtungen auf jedes ValveBiped-Model.
+  frame = "world" (Standard): bezogen auf Boden und Blickrichtung
+  frame = "body":  bezogen auf den geneigten Körper
+  frame = "torso": bezogen auf den Oberkörper (z. B. verschränkte Arme)
+  Möglich für: Spine, R_/L_UpperArm, R_/L_Forearm, R_/L_Thigh, R_/L_Calf
+
+bones (optional): feste Zusatzwinkel für andere Bones (Kopf, Hände, Füße).
+
+Feinjustieren im Spiel mit eoc_sport_posetool (Admins).
 ]]
 
-local A = Angle
+local V = Vector
 
-local CROSSED_ARMS = {
-    R_UpperArm = A(20, -57, -6),
-    R_Forearm = A(-44, -107, 16),
-    R_Hand = A(14, -33, -7),
-    L_UpperArm = A(-29, -59, 1),
-    L_Forearm = A(51, -120, -19),
-    L_Hand = A(26, 32, -15),
-}
-
-local function merge(...)
+-- Rechts/links spiegeln: aus einer Richtung für den rechten Arm/das rechte
+-- Bein die linke machen (links = +y).
+local function Mirror(t)
     local out = {}
-    for _, t in ipairs({ ... }) do
-        for k, v in pairs(t) do out[k] = v end
+    for name, a in pairs(t) do
+        out[name] = a
+        local other
+        if string.StartWith(name, "R_") then other = "L_" .. string.sub(name, 3) end
+        if other and not t[other] then
+            local dir = isvector(a) and a or a.dir
+            local m = V(dir.x, -dir.y, dir.z)
+            out[other] = isvector(a) and m or { dir = m, frame = a.frame }
+        end
     end
     return out
 end
@@ -38,124 +46,127 @@ end
 EoCSport.Poses = {
     stand = {},
 
-    -- Liegestütze
+    -- Liegestütze: Arme senkrecht unter den Schultern
     pushup_up = {
-        pitch = 66, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -68, 0), L_UpperArm = A(0, -68, 0),
-            R_Hand = A(0, 0, 70), L_Hand = A(0, 0, -70),
-            Head1 = A(0, -25, 0),
-            R_Foot = A(0, 40, 0), L_Foot = A(0, 40, 0),
-        },
+        pitch = 66,
+        aim = Mirror({
+            R_UpperArm = V(0, -0.15, -1),
+            R_Forearm = V(0, -0.1, -1),
+        }),
     },
+    -- unten: Ellbogen nach hinten-außen, Unterarme senkrecht
     pushup_down = {
-        pitch = 80, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -25, 0), L_UpperArm = A(0, -25, 0),
-            R_Forearm = A(0, -75, 0), L_Forearm = A(0, -75, 0),
-            R_Hand = A(0, 0, 70), L_Hand = A(0, 0, -70),
-            Head1 = A(0, -35, 0),
-            R_Foot = A(0, 50, 0), L_Foot = A(0, 50, 0),
-        },
+        pitch = 76,
+        aim = Mirror({
+            R_UpperArm = V(-0.55, -0.75, -0.25),
+            R_Forearm = V(0.05, -0.05, -1),
+        }),
     },
 
-    -- Sit-ups (Rückenlage, Knie angewinkelt, Arme verschränkt)
+    -- Sit-ups: Rückenlage, Knie angewinkelt, Arme vor der Brust verschränkt
     situp_down = {
-        pitch = -90, pivot = 38, dz = -33, dx = 0,
-        bones = merge(CROSSED_ARMS, {
-            R_Thigh = A(0, -50, 0), L_Thigh = A(0, -50, 0),
-            R_Calf = A(0, 100, 0), L_Calf = A(0, 100, 0),
+        pitch = -90, pivot = 38, dz = -33,
+        aim = Mirror({
+            R_Thigh = V(0.7, -0.05, 0.7),
+            R_Calf = V(0.75, 0, -0.65),
+            R_UpperArm = { dir = V(0.6, 0, -0.8), frame = "torso" },
+            R_Forearm = { dir = V(0.35, 1, 0.25), frame = "torso" },
         }),
     },
     situp_up = {
-        pitch = -90, pivot = 38, dz = -33, dx = 0,
-        bones = merge(CROSSED_ARMS, {
-            R_Thigh = A(0, -50, 0), L_Thigh = A(0, -50, 0),
-            R_Calf = A(0, 100, 0), L_Calf = A(0, 100, 0),
-            Spine = A(0, 25, 0), Spine1 = A(0, 22, 0), Spine2 = A(0, 18, 0),
-            Neck1 = A(0, 10, 0),
+        pitch = -90, pivot = 38, dz = -33,
+        aim = Mirror({
+            Spine = V(-0.45, 0, 0.9),
+            R_Thigh = V(0.7, -0.05, 0.7),
+            R_Calf = V(0.75, 0, -0.65),
+            R_UpperArm = { dir = V(0.6, 0, -0.8), frame = "torso" },
+            R_Forearm = { dir = V(0.35, 1, 0.25), frame = "torso" },
         }),
     },
 
-    -- Kniebeugen
+    -- Kniebeugen: Oberschenkel fast waagerecht, Arme nach vorn
     squat_down = {
-        pitch = 0, pivot = 0, dz = -19, dx = -11,
-        bones = {
-            R_Thigh = A(0, -80, 0), L_Thigh = A(0, -80, 0),
-            R_Calf = A(0, 100, 0), L_Calf = A(0, 100, 0),
-            R_Foot = A(0, -20, 0), L_Foot = A(0, -20, 0),
-            Spine = A(0, 18, 0), Spine1 = A(0, 8, 0),
-            R_UpperArm = A(0, -80, 0), L_UpperArm = A(0, -80, 0),
-        },
+        dz = -12, dx = -10,
+        aim = Mirror({
+            Spine = V(0.35, 0, 0.94),
+            R_Thigh = V(0.9, -0.15, -0.4),
+            R_Calf = V(-0.3, -0.05, -0.95),
+            R_UpperArm = V(1, -0.1, 0.05),
+            R_Forearm = V(1, -0.05, 0.05),
+        }),
     },
 
-    -- Hampelmann
+    -- Hampelmann: Arme über den Kopf, Beine auseinander
     jack_open = {
-        pitch = 0, pivot = 0, dz = 2, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -165, 0), L_UpperArm = A(0, -165, 0),
-            R_Thigh = A(14, 0, 0), L_Thigh = A(-14, 0, 0),
-        },
+        aim = Mirror({
+            R_UpperArm = V(0, -0.55, 0.85),
+            R_Forearm = V(0, -0.4, 0.9),
+            R_Thigh = V(0, -0.3, -0.95),
+            R_Calf = V(0, -0.3, -0.95),
+        }),
     },
 
-    -- Burpee-Sprung
+    -- Burpee-Sprung: Arme nach oben
     burpee_jump = {
-        pitch = 0, pivot = 0, dz = 14, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -165, 0), L_UpperArm = A(0, -165, 0),
-            R_Foot = A(0, 30, 0), L_Foot = A(0, 30, 0),
-        },
+        dz = 12,
+        aim = Mirror({
+            R_UpperArm = V(0.1, -0.2, 1),
+            R_Forearm = V(0.1, -0.2, 1),
+        }),
     },
 
-    -- Klimmzüge (Position kommt vom Server, hier nur Körper und Arme)
+    -- Klimmzüge (Position kommt vom Server)
     pullup_hang = {
-        pitch = 0, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -172, 0), L_UpperArm = A(0, -172, 0),
-            R_Calf = A(0, 20, 0), L_Calf = A(0, 20, 0),
-        },
+        aim = Mirror({
+            R_UpperArm = V(0.1, -0.2, 1),
+            R_Forearm = V(0.1, -0.2, 1),
+            R_Calf = V(-0.2, 0, -1),
+        }),
     },
     pullup_top = {
-        pitch = 0, pivot = 0, dz = 22, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -150, 0), L_UpperArm = A(0, -150, 0),
-            R_Forearm = A(0, -110, 0), L_Forearm = A(0, -110, 0),
-            R_Calf = A(0, 35, 0), L_Calf = A(0, 35, 0),
-        },
+        dz = 22,
+        aim = Mirror({
+            R_UpperArm = V(0.1, -0.85, -0.45),
+            R_Forearm = V(0, 0.4, 0.92),
+            R_Calf = V(-0.35, 0, -0.95),
+        }),
     },
 
-    -- Planke (Unterarmstütz)
+    -- Planke: Oberarme senkrecht, Unterarme flach nach vorn
     plank = {
-        pitch = 78, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            R_UpperArm = A(0, -78, 0), L_UpperArm = A(0, -78, 0),
-            R_Forearm = A(0, -85, 0), L_Forearm = A(0, -85, 0),
-            Head1 = A(0, -25, 0),
-            R_Foot = A(0, 45, 0), L_Foot = A(0, 45, 0),
-        },
+        pitch = 78,
+        aim = Mirror({
+            R_UpperArm = V(0, -0.1, -1),
+            R_Forearm = V(1, 0.15, -0.05),
+        }),
     },
 
     -- Laufen auf der Stelle
     run_mid = {
-        pitch = 0, pivot = 0, dz = 1, dx = 0,
-        bones = {
-            R_Forearm = A(0, -70, 0), L_Forearm = A(0, -70, 0),
-        },
+        dz = 1,
+        aim = Mirror({
+            R_UpperArm = V(0, -0.1, -1),
+            R_Forearm = V(0.85, 0.1, 0.5),
+        }),
     },
     run_a = {
-        pitch = 0, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            R_Thigh = A(0, -70, 0), R_Calf = A(0, 85, 0),
-            R_UpperArm = A(0, 30, 0), L_UpperArm = A(0, -40, 0),
-            R_Forearm = A(0, -70, 0), L_Forearm = A(0, -70, 0),
+        aim = {
+            R_Thigh = V(0.9, 0, -0.35),
+            R_Calf = V(0.05, 0, -1),
+            L_UpperArm = V(0.45, 0.05, -0.9),
+            L_Forearm = V(0.8, -0.1, 0.6),
+            R_UpperArm = V(-0.45, -0.05, -0.9),
+            R_Forearm = V(0.6, 0.1, 0.5),
         },
     },
     run_b = {
-        pitch = 0, pivot = 0, dz = 0, dx = 0,
-        bones = {
-            L_Thigh = A(0, -70, 0), L_Calf = A(0, 85, 0),
-            L_UpperArm = A(0, 30, 0), R_UpperArm = A(0, -40, 0),
-            R_Forearm = A(0, -70, 0), L_Forearm = A(0, -70, 0),
+        aim = {
+            L_Thigh = V(0.9, 0, -0.35),
+            L_Calf = V(0.05, 0, -1),
+            R_UpperArm = V(0.45, -0.05, -0.9),
+            R_Forearm = V(0.8, 0.1, 0.6),
+            L_UpperArm = V(-0.45, 0.05, -0.9),
+            L_Forearm = V(0.6, -0.1, 0.5),
         },
     },
 }

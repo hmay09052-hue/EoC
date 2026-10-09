@@ -27,11 +27,13 @@ Sportsystem für Trainings: `/sport` öffnet das Menü, man wählt eine Übung, 
 
 ## Animationen
 
-Gestartet wird mit Weg B/C (Bone-Posen). Jede Pose hat eine Körperneigung (Render-Winkel um einen Drehpunkt) und Bone-Winkel. Die Werte in `cl_poses.lua` sind **Startwerte, die im Spiel noch nicht getestet sind**. Sie müssen auf den Klon-Models feinjustiert werden:
+Gestartet wird mit Weg B/C (Bone-Posen). Jede Pose hat eine Körperneigung (Render-Winkel um einen Drehpunkt) und für Arme, Beine und Wirbelsäule eine **Zielrichtung** (`aim`, z. B. `V(0, 0, -1)` = senkrecht nach unten). Den passenden Bone-Winkel berechnet der Client in jedem Bild aus der echten Lage des Models. Dadurch hängt nichts davon ab, wie die Bones im Klon-Model ausgerichtet sind.
+
+Feinjustieren:
 
 1. Als Admin `eoc_sport_posetool` in die Konsole eingeben.
-2. Pose wählen, Bone wählen, Regler bewegen. Mit „Abspielen“ läuft eine ganze Wiederholung in Schleife.
-3. „Als Lua kopieren“ und den Block in `cl_poses.lua` ersetzen.
+2. Pose und Bone wählen, dann die Richtungsregler (vorn/links/oben) bewegen. Mit „Abspielen“ läuft eine ganze Wiederholung in Schleife.
+3. „Als Lua kopieren“ und den Block in `cl_poses.lua` ersetzen (`V` = `Vector`).
 
 Für Weg A trägt man bei der Übung `sequence = "name"` ein. Hat das Model diese Sequenz, wird sie statt der Posen abgespielt (Zyklus 0 → 1 pro Wiederholung).
 

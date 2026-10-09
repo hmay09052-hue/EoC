@@ -8,6 +8,13 @@ local States = EoCSport.States
 
 ---------------------------------------------------------------------------
 -- Posen vorbereiten
+--
+-- Eine Pose hat zwei Arten von Bone-Angaben:
+--   aim    Richtung, in die ein Glied zeigen soll (Oberarm, Unterarm,
+--          Oberschenkel, Unterschenkel, Wirbelsäule). Der nötige Bone-Winkel
+--          wird jedes Bild aus der gemessenen Bone-Lage berechnet, damit
+--          hängt nichts von den Achsen der Bones im Model ab.
+--   bones  feste Zusatzwinkel (ManipulateBoneAngles) für alles andere.
 ---------------------------------------------------------------------------
 local PREFIX = "ValveBiped.Bip01_"
 local ALL_BONES = {}
@@ -17,39 +24,83 @@ local function FullBone(name)
     return PREFIX .. name
 end
 
+-- Glied -> Bone am Ende des Glieds (für die gemessene Richtung)
+local AIM_CHILD = {
+    [PREFIX .. "Spine"] = PREFIX .. "Neck1",
+    [PREFIX .. "R_UpperArm"] = PREFIX .. "R_Forearm",
+    [PREFIX .. "L_UpperArm"] = PREFIX .. "L_Forearm",
+    [PREFIX .. "R_Forearm"] = PREFIX .. "R_Hand",
+    [PREFIX .. "L_Forearm"] = PREFIX .. "L_Hand",
+    [PREFIX .. "R_Thigh"] = PREFIX .. "R_Calf",
+    [PREFIX .. "L_Thigh"] = PREFIX .. "L_Calf",
+    [PREFIX .. "R_Calf"] = PREFIX .. "R_Foot",
+    [PREFIX .. "L_Calf"] = PREFIX .. "L_Foot",
+}
+EoCSport.AimBones = AIM_CHILD
+
+-- Reihenfolge: Eltern vor Kindern
+local AIM_LEVELS = {
+    { PREFIX .. "Spine" },
+    { PREFIX .. "R_UpperArm", PREFIX .. "L_UpperArm", PREFIX .. "R_Thigh", PREFIX .. "L_Thigh" },
+    { PREFIX .. "R_Forearm", PREFIX .. "L_Forearm", PREFIX .. "R_Calf", PREFIX .. "L_Calf" },
+}
+
+local function AddBone(name)
+    for _, n in ipairs(ALL_BONES) do
+        if n == name then return end
+    end
+    ALL_BONES[#ALL_BONES + 1] = name
+end
+
+local function BuildAimList(pose)
+    pose.aimList = {}
+    for name, a in pairs(pose.aim) do
+        pose.aimList[#pose.aimList + 1] = { bone = name, dir = a.dir, frame = a.frame, w = 1 }
+    end
+end
+
 function EoCSport.PreparePoses()
-    local seen = {}
     ALL_BONES = {}
+    for bone, child in pairs(AIM_CHILD) do
+        AddBone(bone)
+        AddBone(child)
+    end
     for _, pose in pairs(EoCSport.Poses) do
         pose.pitch = pose.pitch or 0
         pose.pivot = pose.pivot or 0
         pose.dz = pose.dz or 0
         pose.dx = pose.dx or 0
+
         local bones = {}
-        for name, ang in pairs(pose.bones or {}) do
-            bones[FullBone(name)] = ang
-        end
+        for name, ang in pairs(pose.bones or {}) do bones[FullBone(name)] = ang end
         pose.bones = bones
-        for name in pairs(bones) do
-            if not seen[name] then
-                seen[name] = true
-                ALL_BONES[#ALL_BONES + 1] = name
+        for name in pairs(bones) do AddBone(name) end
+
+        local aim = {}
+        for name, a in pairs(pose.aim or {}) do
+            if isvector(a) then a = { dir = a } end
+            local full = FullBone(name)
+            if AIM_CHILD[full] then
+                aim[full] = { dir = a.dir:GetNormalized(), frame = a.frame or "world" }
             end
         end
+        pose.aim = aim
+        BuildAimList(pose)
     end
 end
 EoCSport.PreparePoses()
 
 function EoCSport.RegisterBone(name)
     name = FullBone(name)
-    for _, n in ipairs(ALL_BONES) do
-        if n == name then return name end
-    end
-    ALL_BONES[#ALL_BONES + 1] = name
+    AddBone(name)
     return name
 end
 
-local IDENTITY = { pitch = 0, pivot = 0, dz = 0, dx = 0, bones = {} }
+function EoCSport.RebuildAims(pose)
+    BuildAimList(pose)
+end
+
+local IDENTITY = { pitch = 0, pivot = 0, dz = 0, dx = 0, bones = {}, aim = {}, aimList = {} }
 
 local function GetPose(name)
     return EoCSport.Poses[name] or IDENTITY
@@ -73,12 +124,20 @@ local function Blend(a, b, t)
         dz = Lerp(t, a.dz, b.dz),
         dx = Lerp(t, a.dx, b.dx),
         bones = {},
+        aimList = {},
     }
     for name, ang in pairs(a.bones) do
         out.bones[name] = LerpAng(t, ang, b.bones[name] or angle_zero)
     end
     for name, ang in pairs(b.bones) do
         if not a.bones[name] then out.bones[name] = LerpAng(t, angle_zero, ang) end
+    end
+    -- Richtungen werden erst beim Anwenden gemischt (gewichtet)
+    for _, e in ipairs(a.aimList) do
+        out.aimList[#out.aimList + 1] = { bone = e.bone, dir = e.dir, frame = e.frame, w = e.w * (1 - t) }
+    end
+    for _, e in ipairs(b.aimList) do
+        out.aimList[#out.aimList + 1] = { bone = e.bone, dir = e.dir, frame = e.frame, w = e.w * t }
     end
     return out
 end
@@ -150,6 +209,126 @@ local function BoneIds(ply)
     return cache
 end
 
+-- Drehung (als Matrix), die den Einheitsvektor a auf b dreht, ohne Verdrillung
+local function RotBetween(a, b)
+    local axis = a:Cross(b)
+    local s = axis:Length()
+    local c = math.Clamp(a:Dot(b), -1, 1)
+    if s < 1e-5 then
+        if c > 0 then return nil end
+        axis = math.abs(a.x) < 0.9 and a:Cross(Vector(1, 0, 0)) or a:Cross(Vector(0, 1, 0))
+        axis:Normalize()
+        s, c = 0, -1
+    else
+        axis:Div(s)
+    end
+    local x, y, z = axis.x, axis.y, axis.z
+    local k = 1 - c
+    return Matrix({
+        { c + x * x * k, x * y * k - z * s, x * z * k + y * s, 0 },
+        { y * x * k + z * s, c + y * y * k, y * z * k - x * s, 0 },
+        { z * x * k - y * s, z * y * k + x * s, c + z * z * k, 0 },
+        { 0, 0, 0, 1 },
+    })
+end
+
+-- Richtung (x = vorn, y = links, z = oben) in Weltkoordinaten
+local function FrameDir(dir, frame, frames)
+    local f = frames[frame] or frames.world
+    return f.f * dir.x - f.r * dir.y + f.u * dir.z
+end
+
+local function MakeFrame(fwd, right, up)
+    return { f = fwd, r = right, u = up }
+end
+
+local function ApplyAims(ply, pose, ids, yaw)
+    if #pose.aimList == 0 then return end
+
+    -- Gewichtete Ziele pro Bone sammeln
+    local byBone = {}
+    for _, e in ipairs(pose.aimList) do
+        if e.w > 0.001 then
+            local list = byBone[e.bone]
+            if not list then
+                list = {}
+                byBone[e.bone] = list
+            end
+            list[#list + 1] = e
+        end
+    end
+    if next(byBone) == nil then return end
+
+    local flat = Angle(0, yaw, 0)
+    local bodyAng = Angle(pose.pitch, yaw, 0)
+    local frames = {
+        world = MakeFrame(flat:Forward(), flat:Right(), flat:Up()),
+        body = MakeFrame(bodyAng:Forward(), bodyAng:Right(), bodyAng:Up()),
+    }
+
+    for levelIndex, level in ipairs(AIM_LEVELS) do
+        local todo = false
+        for _, bone in ipairs(level) do
+            if byBone[bone] then todo = true break end
+        end
+
+        if todo then
+            ply:InvalidateBoneCache()
+            ply:SetupBones()
+
+            for _, bone in ipairs(level) do
+                local list = byBone[bone]
+                local id, childId = ids[bone], ids[AIM_CHILD[bone]]
+                if list and id and childId then
+                    local m, cm = ply:GetBoneMatrix(id), ply:GetBoneMatrix(childId)
+                    if m and cm then
+                        local cur = cm:GetTranslation() - m:GetTranslation()
+                        if cur:LengthSqr() > 0.01 then
+                            cur:Normalize()
+
+                            local target, total = Vector(0, 0, 0), 0
+                            for _, e in ipairs(list) do
+                                target:Add(FrameDir(e.dir, e.frame, frames) * e.w)
+                                total = total + e.w
+                            end
+                            if total < 1 then target:Add(cur * (1 - total)) end
+
+                            if target:LengthSqr() > 0.0001 then
+                                target:Normalize()
+                                local boneAng = m:GetAngles()
+                                local lCur = WorldToLocal(cur, angle_zero, vector_origin, boneAng)
+                                local lDes = WorldToLocal(target, angle_zero, vector_origin, boneAng)
+                                local rot = RotBetween(lCur:GetNormalized(), lDes:GetNormalized())
+                                if rot then ply:ManipulateBoneAngles(id, rot:GetAngles()) end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Oberkörper-Rahmen nach der Wirbelsäule messen (für frame = "torso")
+        if levelIndex == 1 then
+            ply:InvalidateBoneCache()
+            ply:SetupBones()
+            local sid, nid = ids[PREFIX .. "Spine"], ids[PREFIX .. "Neck1"]
+            local sm = sid and ply:GetBoneMatrix(sid)
+            local nm = nid and ply:GetBoneMatrix(nid)
+            if sm and nm then
+                local up = (nm:GetTranslation() - sm:GetTranslation()):GetNormalized()
+                local right = frames.body.r
+                local fwd = up:Cross(right):GetNormalized()
+                right = fwd:Cross(up):GetNormalized()
+                frames.torso = MakeFrame(fwd, right, up)
+            else
+                frames.torso = frames.body
+            end
+        end
+    end
+
+    ply:InvalidateBoneCache()
+end
+
 local function ApplyPose(ply, pose, yaw)
     local ids = BoneIds(ply)
     for _, name in ipairs(ALL_BONES) do
@@ -165,9 +344,18 @@ local function ApplyPose(ply, pose, yaw)
     local origin = ply:GetPos() + pivot - rotated
         + Angle(0, yaw, 0):Forward() * pose.dx + Vector(0, 0, pose.dz)
 
+    if not ply.EoCSportPosed then ply.EoCSportRA = ply:GetRenderAngles() end
     ply:SetRenderOrigin(origin)
     ply:SetRenderAngles(ang)
     ply:InvalidateBoneCache()
+
+    ApplyAims(ply, pose, ids, yaw)
+end
+
+-- SetRenderAngles braucht immer einen Winkel; ohne Argument wirft GMod einen Fehler.
+local function RestoreRender(ply)
+    ply:SetRenderOrigin(ply:GetPos())
+    ply:SetRenderAngles(ply.EoCSportRA or Angle(0, ply:EyeAngles().y, 0))
 end
 
 local function ResetPose(ply)
@@ -177,8 +365,8 @@ local function ResetPose(ply)
         local id = ids[name]
         if id then ply:ManipulateBoneAngles(id, angle_zero) end
     end
-    ply:SetRenderOrigin()
-    ply:SetRenderAngles()
+    RestoreRender(ply)
+    ply.EoCSportRA = nil
     ply:InvalidateBoneCache()
 end
 EoCSport.ResetPose = ResetPose
@@ -208,8 +396,8 @@ hook.Add("PrePlayerDraw", "EoCSport_Pose", function(ply)
         else
             pose = GetPose(pv.pose)
         end
-        ply.EoCSportPosed = true
         ApplyPose(ply, pose, pv.yaw)
+        ply.EoCSportPosed = true
         return
     end
 
@@ -234,8 +422,9 @@ end)
 
 hook.Add("PostPlayerDraw", "EoCSport_Pose", function(ply)
     if not ply.EoCSportPosed then return end
-    ply:SetRenderOrigin()
-    ply:SetRenderAngles()
+    RestoreRender(ply)
+    -- Nächstes Bild die Original-Winkel neu einlesen
+    ply.EoCSportPosed = nil
 end)
 
 hook.Add("CalcMainActivity", "EoCSport_Activity", function(ply)
@@ -357,6 +546,16 @@ local function PoseToLua(name, pose)
         lines[#lines + 1] = string.format("            %s = A(%g, %g, %g),", short, math.Round(a.p), math.Round(a.y), math.Round(a.r))
     end
     lines[#lines + 1] = "        },"
+    lines[#lines + 1] = "        aim = {"
+    local aimNames = table.GetKeys(pose.aim or {})
+    table.sort(aimNames)
+    for _, bone in ipairs(aimNames) do
+        local a = pose.aim[bone]
+        local short = string.gsub(bone, "^ValveBiped%.Bip01_", "")
+        local frame = a.frame ~= "world" and (", frame = \"" .. a.frame .. "\"") or ""
+        lines[#lines + 1] = string.format("            %s = { dir = V(%.2f, %.2f, %.2f)%s },", short, a.dir.x, a.dir.y, a.dir.z, frame)
+    end
+    lines[#lines + 1] = "        },"
     lines[#lines + 1] = "    },"
     return table.concat(lines, "\n")
 end
@@ -386,8 +585,8 @@ local function OpenPoseTool()
     local frame = vgui.Create("DFrame")
     toolFrame = frame
     frame:SetTitle("EoC Sport – Posen-Werkzeug")
-    frame:SetSize(360, 640)
-    frame:SetPos(20, ScrH() / 2 - 320)
+    frame:SetSize(380, 760)
+    frame:SetPos(20, math.max(10, ScrH() / 2 - 380))
     frame:MakePopup()
     frame:SetKeyboardInputEnabled(false)
     frame.OnRemove = function()
@@ -445,6 +644,25 @@ local function OpenPoseTool()
         r = slider("Bone Roll", -180, 180),
     }
 
+    local function slider2(label)
+        local s = slider(label, -1, 1)
+        s:SetDecimals(2)
+        return s
+    end
+
+    local aimSliders = {
+        x = slider2("Richtung vorn (+) / hinten (-)"),
+        y = slider2("Richtung links (+) / rechts (-)"),
+        z = slider2("Richtung oben (+) / unten (-)"),
+    }
+
+    local frameBox = vgui.Create("DComboBox", frame)
+    frameBox:Dock(TOP)
+    frameBox:DockMargin(0, 2, 0, 0)
+    frameBox:AddChoice("Richtung: Welt (Blickrichtung)", "world", true)
+    frameBox:AddChoice("Richtung: Körper (mit Neigung)", "body")
+    frameBox:AddChoice("Richtung: Oberkörper", "torso")
+
     local camSlider = slider("Kamera drehen", -180, 180)
     camSlider:SetValue(160)
     EoCSport.PreviewCamYaw = 160
@@ -459,6 +677,15 @@ local function OpenPoseTool()
         boneSliders.p:SetValue(a.p)
         boneSliders.y:SetValue(a.y)
         boneSliders.r:SetValue(a.r)
+        local aim = p.aim and p.aim[currentBone]
+        local d = aim and aim.dir or vector_origin
+        aimSliders.x:SetValue(d.x)
+        aimSliders.y:SetValue(d.y)
+        aimSliders.z:SetValue(d.z)
+        frameBox:ChooseOptionID(aim and ({ world = 1, body = 2, torso = 3 })[aim.frame] or 1)
+        local canAim = EoCSport.AimBones[currentBone] ~= nil
+        for _, s2 in pairs(aimSliders) do s2:SetEnabled(canAim) end
+        frameBox:SetEnabled(canAim)
         updating = false
     end
 
@@ -481,6 +708,22 @@ local function OpenPoseTool()
             end
         end
     end
+
+    local function writeAim()
+        if updating or not pose() or not EoCSport.AimBones[currentBone] then return end
+        local p = pose()
+        p.aim = p.aim or {}
+        local d = Vector(aimSliders.x:GetValue(), aimSliders.y:GetValue(), aimSliders.z:GetValue())
+        if d:LengthSqr() < 0.01 then
+            p.aim[currentBone] = nil
+        else
+            local _, fr = frameBox:GetSelected()
+            p.aim[currentBone] = { dir = d:GetNormalized(), frame = fr or "world" }
+        end
+        EoCSport.RebuildAims(p)
+    end
+    for _, s2 in pairs(aimSliders) do s2.OnValueChanged = writeAim end
+    frameBox.OnSelect = writeAim
 
     poseBox.OnSelect = function(_, _, value)
         EoCSport.Preview.pose = value
