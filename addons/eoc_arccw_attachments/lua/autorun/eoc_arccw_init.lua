@@ -10,6 +10,10 @@ end
 include("eoc_arccw/sh_config.lua")
 include("eoc_arccw/sh_core.lua")
 
+if SERVER then
+    include("eoc_arccw/sv_shotlog.lua")
+end
+
 if CLIENT then
     include("eoc_arccw/cl_html.lua")
     include("eoc_arccw/cl_menu.lua")

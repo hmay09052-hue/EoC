@@ -16,6 +16,17 @@ C.ReplaceCustomizeMenu = true
 -- nicht wieder angebracht werden, wenn sie nicht freigegeben sind.
 C.EnforceWhitelist = true
 
+-- Schusslog (Server): data/eoc_arccw/schusslog_JJJJ-MM-TT.txt
+C.ShotLog = {
+    Enabled = true,
+    FlushInterval = 30,       -- Sekunden: Schüsse/Treffer gesammelt schreiben
+    LogAttachments = true,    -- Aufsätze an/ab mitschreiben
+    PrintToConsole = false,   -- zusätzlich in die Serverkonsole
+    RecentLines = 300,        -- im Speicher für "eoc_schusslog"
+    ShowLines = 40,
+    AdminGroups = { superadmin = true, admin = true },
+}
+
 -- UI-Sounds ("" = aus)
 C.Sounds = {
     open = "weapons/arccw/extra.wav",
