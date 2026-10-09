@@ -173,7 +173,7 @@ function ENT:TryJetpack(enemy, dist)
     self:StopMoving()
     self.loco:SetJumpHeight(self.JetHeight or 220)
     self.loco:JumpAcrossGap(tr.HitPos, dir)
-    self:PlaySound("thrusters/jet02.wav", 80, 110)
+    self:PlaySound("thrusters/jet02.wav", C.JetpackSoundLevel, 110, nil, C.JetpackVolume)
     return true
 end
 

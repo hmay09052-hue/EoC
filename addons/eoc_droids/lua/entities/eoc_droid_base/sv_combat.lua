@@ -26,6 +26,8 @@ function ENT:TickMovement()
     if self.loco:IsStuck() then
         self:HandleStuck()
     end
+
+    self:UpdateAim()
 end
 
 function ENT:RunTo(pos, speed)
@@ -33,7 +35,7 @@ function ENT:RunTo(pos, speed)
 
     speed = speed or self.Speed
     self.loco:SetDesiredSpeed(speed)
-    self.MoveAnim = speed >= 200 and "walk_fast" or "walk_slow"
+    self.MoveRun = speed >= 180
 
     if not EOCDroids.HasNavmesh() then
         self.DirectGoal = pos

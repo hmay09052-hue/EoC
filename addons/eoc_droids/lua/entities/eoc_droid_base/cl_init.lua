@@ -14,32 +14,70 @@ local matRing = Material("particle/particle_ring_wave_addnofog")
 -- ============================================================
 -- WAFFENMODELL (nur clientseitig, an der rechten Hand)
 -- ============================================================
-function ENT:GetHandMatrix()
+-- Position/Winkel der rechten Hand: Knochen, sonst Attachment
+function ENT:GetHandTransform()
     if self.HandBone == nil then
         self.HandBone = self:LookupBone("ValveBiped.Bip01_R_Hand") or false
+        local att = self:LookupAttachment("anim_attachment_RH")
+        self.HandAttachment = (att and att > 0) and att or false
     end
-    if not self.HandBone then return end
-    return self:GetBoneMatrix(self.HandBone)
+
+    if self.HandBone then
+        local matrix = self:GetBoneMatrix(self.HandBone)
+        if matrix then return matrix:GetTranslation(), matrix:GetAngles() end
+    end
+
+    if self.HandAttachment then
+        local att = self:GetAttachment(self.HandAttachment)
+        if att then return att.Pos, att.Ang end
+    end
+end
+
+local function PickWeaponModel(w)
+    local list = w.Models or (w.Model and { w.Model }) or {}
+    local count = #list
+    for i, mdl in ipairs(list) do
+        -- Der letzte Eintrag ist der HL2-Ersatz
+        if i == count and count > 1 and not C.WeaponFallbackModels then return end
+        if EOCDroids.IsValidModel(mdl) then return mdl end
+    end
 end
 
 function ENT:DrawWeaponModel()
     local w = self:GetWeaponData()
-    if not w or not w.Model then return end
+    if not w then return end
 
-    if not EOCDroids.IsValidModel(w.Model) then return end
+    local mdl = w.CachedModel
+    if mdl == nil then
+        mdl = PickWeaponModel(w) or false
+        w.CachedModel = mdl
+    end
+    if not mdl then return end
 
-    if not IsValid(self.WeaponModel) or self.WeaponModelPath ~= w.Model then
+    if not IsValid(self.WeaponModel) or self.WeaponModelPath ~= mdl then
         if IsValid(self.WeaponModel) then self.WeaponModel:Remove() end
-        self.WeaponModel = ClientsideModel(w.Model, RENDERGROUP_OPAQUE)
-        self.WeaponModelPath = w.Model
+        self.WeaponModel = ClientsideModel(mdl, RENDERGROUP_OPAQUE)
+        self.WeaponModelPath = mdl
         if not IsValid(self.WeaponModel) then return end
         self.WeaponModel:SetNoDraw(true)
+
+        -- HL2-Waffen (mit ValveBiped-Knochen) sitzen per Bonemerge exakt in der Hand
+        self.WeaponBonemerge = self.HandBone ~= false and self.WeaponModel:LookupBone("ValveBiped.Bip01_R_Hand") ~= nil
+        if self.WeaponBonemerge then
+            self.WeaponModel:SetParent(self)
+            self.WeaponModel:AddEffects(EF_BONEMERGE)
+        end
     end
 
-    local matrix = self:GetHandMatrix()
-    if not matrix then return end
+    if self.WeaponBonemerge then
+        self.WeaponModel:DrawModel()
+        return
+    end
 
-    local pos, ang = LocalToWorld(w.Offset or Vector(5, -2.7, 0), w.AngOffset or Angle(180, 180, 0), matrix:GetTranslation(), matrix:GetAngles())
+    local handPos, handAng = self:GetHandTransform()
+    if not handPos then return end
+
+    local pos, ang = LocalToWorld(w.Offset or Vector(5, -2.7, 0), w.AngOffset or Angle(180, 180, 0), handPos, handAng)
     self.WeaponModel:SetModelScale(self:GetModelScale(), 0)
     self.WeaponModel:SetPos(pos)
     self.WeaponModel:SetAngles(ang)
@@ -51,11 +89,9 @@ function ENT:DrawWeaponGlow()
     local w = self:GetWeaponData()
     if not w or not w.Glow then return end
 
-    local matrix = self:GetHandMatrix()
-    if not matrix then return end
+    local pos, ang = self:GetHandTransform()
+    if not pos then return end
 
-    local pos = matrix:GetTranslation()
-    local ang = matrix:GetAngles()
     local scale = self:GetModelScale()
     render.SetMaterial(matGlow)
     for _, dist in ipairs({ -32, 32 }) do
@@ -122,7 +158,7 @@ function ENT:DrawJetpackFlame()
 
     if not self.JetSound then
         self.JetSound = CreateSound(self, "thrusters/jet03.wav")
-        self.JetSound:SetSoundLevel(80)
+        self.JetSound:SetSoundLevel(C.JetpackSoundLevel)
     end
 
     if not inAir then
@@ -130,7 +166,7 @@ function ENT:DrawJetpackFlame()
         return
     end
 
-    if not self.JetSound:IsPlaying() then self.JetSound:PlayEx(0.5, 125) end
+    if not self.JetSound:IsPlaying() then self.JetSound:PlayEx(C.JetpackVolume, 125) end
 
     local scale = self:GetModelScale()
     local yaw = Angle(0, self:GetAngles().y, 0)
@@ -161,8 +197,8 @@ function ENT:DrawAimLaser()
     local target = self:GetNW2Entity("EOCAimTarget")
     if not IsValid(target) then return end
 
-    local matrix = self:GetHandMatrix()
-    local start = matrix and (matrix:GetTranslation() + self:GetForward() * 14) or (self:GetPos() + Vector(0, 0, 50))
+    local handPos = self:GetHandTransform()
+    local start = handPos and (handPos + self:GetForward() * 14) or (self:GetPos() + Vector(0, 0, 50))
     local finish = EOCDroids.TargetPos(target)
 
     render.SetMaterial(matLaser)

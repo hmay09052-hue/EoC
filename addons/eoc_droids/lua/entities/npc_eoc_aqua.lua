@@ -22,6 +22,9 @@ ENT.ZapTicks = 10
 
 ENT.NameTagColor = Color(0, 140, 200, 230)
 
+-- Eigene Skelette: Sequenz-Namen haben Vorrang vor Aktivitaeten
+ENT.PreferSequences = true
+
 ENT.Anims = {
     ["idle"] = { "idlepackage", "idle_all_01" },
     ["shoot"] = { "idlepackage" },

@@ -68,7 +68,10 @@ C.ImpactDecals = true
 C.Voices = true                        -- Sprachausgabe ("Roger Roger")
 C.VoiceCooldown = { 6, 14 }            -- Pause zwischen Sprueche eines Droiden
 C.GlobalVoicesPerSecond = 4            -- Max. Sprueche pro Sekunde auf dem ganzen Server
-C.RagdollTime = 15                     -- Sekunden bis Server-Ragdolls entfernt werden
+C.RagdollTime = 15
+C.JetpackVolume = 0.2                  -- Lautstaerke der Jetpacks (0-1)
+C.JetpackSoundLevel = 62               -- Reichweite in dB (niedriger = nur in der Naehe hoerbar)
+C.WeaponFallbackModels = true          -- HL2-Waffenmodell nutzen, wenn das Blaster-Model fehlt                     -- Sekunden bis Server-Ragdolls entfernt werden
 
 -- ============================================================
 -- POD / DISPENSER

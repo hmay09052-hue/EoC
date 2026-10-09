@@ -32,6 +32,9 @@ ENT.ExplodeOnDeath = true
 ENT.DeathExplosionRadius = 200
 ENT.DeathExplosionDamage = 35
 
+-- Eigene Skelette: Sequenz-Namen haben Vorrang vor Aktivitaeten
+ENT.PreferSequences = true
+
 ENT.Anims = {
     ["idle"] = { "idle" },
     ["shoot"] = { "range_attack1" },

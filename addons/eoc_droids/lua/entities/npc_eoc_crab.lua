@@ -44,6 +44,9 @@ ENT.FootstepSounds = {
 
 ENT.NameTagOffset = 20
 
+-- Eigene Skelette: Sequenz-Namen haben Vorrang vor Aktivitaeten
+ENT.PreferSequences = true
+
 ENT.Anims = {
     ["idle"] = { 0 },
     ["shoot"] = { 0 },
