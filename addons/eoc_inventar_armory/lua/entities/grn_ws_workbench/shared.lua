@@ -1,0 +1,12 @@
+ENT.Type = "anim"
+ENT.Base = "base_anim"
+ENT.PrintName = "Werkbank (Waffenmeister)"
+ENT.Author = "GRN"
+ENT.Category = "GRN Store"
+ENT.Spawnable = true
+ENT.AdminOnly = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+ENT.WSKind = "bench"
+ENT.WSModel = "models/props_wasteland/controlroom_desk001b.mdl"
+ENT.WSLabel = "WERKBANK"
+ENT.WSSub = "REPARATUR · LAUFWECHSEL"

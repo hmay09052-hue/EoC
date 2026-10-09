@@ -866,6 +866,10 @@ local function canUseArmory(ply)
 end
 
 local function issueWeapon(ply, weaponData)
+    if hook.Run("GRNArmory_CanIssue", ply, weaponData) == false then
+        return false, "Diese Waffe kann gerade nicht ausgegeben werden.", false
+    end
+
     if not IsValid(ply) or not istable(weaponData) then return false, "Ungültige Waffe.", false end
     if not GRNInventory or not isfunction(GRNInventory.AddItem) or not isfunction(GRNInventory.HasItem) then
         return false, "Das Inventar ist nicht verfügbar; die Waffe kann nicht ausgegeben werden.", false
@@ -906,6 +910,9 @@ local function issueWeapon(ply, weaponData)
     ply.GRNArmoryIssuedItems = ply.GRNArmoryIssuedItems or {}
     ply.GRNArmoryIssuedItems[itemID] = (tonumber(ply.GRNArmoryIssuedItems[itemID]) or 0) + 1
 
+    -- Seriennummern-System: konkrete Waffe aus der Kammer zuteilen.
+    hook.Run("GRNArmory_ItemIssued", ply, itemID, def)
+
     -- Armor pieces are put on directly when their slot is still free.
     local worn = def.Type == "armor" and isfunction(GRNInventory.AutoEquipArmorItem)
         and GRNInventory.AutoEquipArmorItem(ply, itemID) or false
@@ -916,6 +923,9 @@ local function issueWeapon(ply, weaponData)
     end
     return true, tostring(weaponData.name or className) .. " ins Inventar gelegt.", true
 end
+
+S.IssueWeapon = issueWeapon
+S.WeaponMapFor = function(ply) return weaponMap(ply) end
 
 function S.MarkArmoryItemStored(ply, itemID, quantity)
     if not IsValid(ply) then return end
@@ -945,6 +955,8 @@ local function returnIssuedWeapons(ply)
     end
 
     if GRNInventory and isfunction(GRNInventory.RemoveItem) then
+        local previousReason = GRNInventory.RemoveReason
+        GRNInventory.RemoveReason = "return"
         for itemID, quantity in pairs(issued) do
             itemID = tostring(itemID or "")
             quantity = math.max(0, math.floor(tonumber(quantity) or 0))
@@ -953,6 +965,7 @@ local function returnIssuedWeapons(ply)
                 issued[itemID] = nil
             end
         end
+        GRNInventory.RemoveReason = previousReason
         if isfunction(GRNInventory.Sync) then GRNInventory.Sync(ply) end
     end
 

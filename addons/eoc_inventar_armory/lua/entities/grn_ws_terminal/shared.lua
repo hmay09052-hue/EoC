@@ -1,0 +1,12 @@
+ENT.Type = "anim"
+ENT.Base = "base_anim"
+ENT.PrintName = "Waffenkammer-Terminal (Seriennummern)"
+ENT.Author = "GRN"
+ENT.Category = "GRN Store"
+ENT.Spawnable = true
+ENT.AdminOnly = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+ENT.WSKind = "terminal"
+ENT.WSModel = "models/props_combine/combine_intmonitor001.mdl"
+ENT.WSLabel = "WAFFENKAMMER"
+ENT.WSSub = "BESTAND · AKTEN · TRADITION"

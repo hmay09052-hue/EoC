@@ -300,7 +300,8 @@ local function normalizeState(raw)
                     id = rawItem.id,
                     qty = math.min(qty, stack),
                     slot = INV.ClampSlot(rawItem.slot),
-                    ammoGranted = rawItem.ammoGranted == true
+                    ammoGranted = rawItem.ammoGranted == true,
+                    serial = isstring(rawItem.serial) and rawItem.serial ~= "" and rawItem.serial or nil
                 }
 
                 if not item.slot or not canPlaceAt(state, def, item.slot, item.uid, false) then
@@ -747,6 +748,9 @@ local function giveEquippedWeapon(ply, state, item)
         return false, "Die konfigurierte SWEP-Klasse konnte nicht vergeben werden: " .. def.WeaponClass
     end
 
+    -- Seriennummern-System: Waffe dem Inventar-Gegenstand zuordnen.
+    hook.Run("GRNInventory_WeaponGiven", ply, item, weapon, def)
+
     local ammo = math.max(0, math.floor(tonumber(def.GiveAmmoOnEquip) or 0))
     if ammo > 0 and isstring(def.AmmoType) and not item.ammoGranted then
         ply:GiveAmmo(ammo, def.AmmoType, true)
@@ -894,6 +898,7 @@ local function removeQuantity(ply, state, item, quantity)
             INV.UnequipUID(ply, item.uid, true)
         end
         local wasArmor = isArmorEquipped(state, item.uid)
+        hook.Run("GRNInventory_ItemRemoved", ply, item, def, INV.RemoveReason)
         table.RemoveByValue(state.items, item)
         removeUIDFromEquipment(state, item.uid)
         if wasArmor then INV.ApplyArmor(ply) end
@@ -917,6 +922,18 @@ function INV.RemoveItem(ply, id, quantity)
             removed = removed + take
         end
     end
+    return removed
+end
+
+-- Entfernt genau einen Inventar-Gegenstand (z. B. eine bestimmte Seriennummer).
+function INV.RemoveItemUID(ply, uid, reason)
+    local state = INV.GetState(ply)
+    local item = state and findItemByUID(state, uid)
+    if not item then return 0 end
+    local previousReason = INV.RemoveReason
+    INV.RemoveReason = reason or previousReason
+    local removed = removeQuantity(ply, state, item, item.qty)
+    INV.RemoveReason = previousReason
     return removed
 end
 
@@ -965,7 +982,7 @@ function INV.LoadPlayer(ply)
     if ply:GetPData(SESSION_KEY, "") ~= INV.ServerSession then
         ply:SetPData(SESSION_KEY, INV.ServerSession)
         if respawnConfig().RemoveWeaponsOnServerRestart ~= false then
-            INV.RemoveWeapons(ply)
+            INV.RemoveWeapons(ply, "restart")
         end
     end
     return state
@@ -990,7 +1007,8 @@ local function payloadForPlayer(ply)
                 weight = tonumber(def.Weight) or 0,
                 rarity = def.Rarity or "common",
                 type = def.Type or "generic",
-                desc = def.Description or "",
+                desc = (item.serial and ("SN " .. item.serial .. (def.Description and def.Description ~= "" and (" · " .. def.Description) or ""))) or def.Description or "",
+                serial = item.serial,
                 equipSlot = INV.GetEquipSlotForDefinition(def),
                 armorSlot = INV.GetArmorSlotForDefinition(def),
                 armorStats = def.Type == "armor" and {
@@ -1273,7 +1291,10 @@ local function dropSlot(ply, slot, quantity)
 
     local ent = INV.SpawnDroppedItem(ply, item.id, quantity)
     if not IsValid(ent) then return false, "Der Gegenstand konnte nicht fallen gelassen werden." end
+    local previousReason, previousDrop = INV.RemoveReason, INV.RemoveDropEntity
+    INV.RemoveReason, INV.RemoveDropEntity = "drop", ent
     removeQuantity(ply, state, item, quantity)
+    INV.RemoveReason, INV.RemoveDropEntity = previousReason, previousDrop
     return true, "Gegenstand fallen gelassen."
 end
 
@@ -1296,6 +1317,7 @@ function INV.PickupWorldEntity(ply, ent)
         return
     end
 
+    hook.Run("GRNInventory_PickedUp", ply, ent, id, added)
     if added >= quantity then
         ent:Remove()
     else
@@ -1451,9 +1473,11 @@ end
 
 -- Removes the weapons (equipped or stored) from the inventory and takes the
 -- SWEPs away. Job default weapons, armor and all other items are kept.
-function INV.RemoveWeapons(ply)
+function INV.RemoveWeapons(ply, reason)
     local state = INV.GetState(ply)
     if not state then return 0 end
+    local previousReason = INV.RemoveReason
+    INV.RemoveReason = reason or "removed"
 
     local removed = 0
     for i = #state.items, 1, -1 do
@@ -1473,6 +1497,7 @@ function INV.RemoveWeapons(ply)
         end
     end
 
+    INV.RemoveReason = previousReason
     if removed > 0 then
         INV.SavePlayer(ply)
         if ply.GRNInventoryOpen then INV.Sync(ply) end
@@ -1509,9 +1534,10 @@ local function resolveDeath(ply)
     ply.GRNPendingDeath = nil
     ply.GRNForceRevive = nil
 
+    hook.Run("GRNInventory_DeathResolved", ply, revived)
     if revived then return end
     if respawnConfig().RemoveArmoryWeaponsOnRespawn == false then return end
-    INV.RemoveWeapons(ply)
+    INV.RemoveWeapons(ply, "death")
 end
 
 -- Revive integrations. Krakens Medical (KMS) never kills a downed player, so
@@ -1549,7 +1575,7 @@ local function onCharacterSelected(ply, charID)
     if respawnConfig().RemoveWeaponsOnCharacterChange == false then return end
 
     ply.GRNPendingDeath = nil
-    INV.RemoveWeapons(ply)
+    INV.RemoveWeapons(ply, "character")
 end
 
 hook.Add("symchars_selectedcharacter", "GRNInventory_CharacterChange", function(ply, char)
@@ -1621,7 +1647,7 @@ hook.Add("PlayerDisconnected", "GRNInventory_Save", function(ply)
     -- Leaving while dead (or before the revive check ran) counts as a respawn.
     if ply.GRNPendingDeath and respawnConfig().RemoveArmoryWeaponsOnRespawn ~= false then
         ply.GRNPendingDeath = nil
-        INV.RemoveWeapons(ply)
+        INV.RemoveWeapons(ply, "death")
     end
     INV.SavePlayer(ply)
     INV.PlayerStates[ply] = nil

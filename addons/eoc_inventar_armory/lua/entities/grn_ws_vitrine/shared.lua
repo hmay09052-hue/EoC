@@ -1,0 +1,12 @@
+ENT.Type = "anim"
+ENT.Base = "base_anim"
+ENT.PrintName = "Vitrine (Traditionswaffen)"
+ENT.Author = "GRN"
+ENT.Category = "GRN Store"
+ENT.Spawnable = true
+ENT.AdminOnly = true
+ENT.RenderGroup = RENDERGROUP_BOTH
+ENT.WSKind = "vitrine"
+ENT.WSModel = "models/props_c17/display_cooler01a.mdl"
+ENT.WSLabel = "VITRINE"
+ENT.WSSub = "TRADITIONSWAFFEN · CHRONIK"
