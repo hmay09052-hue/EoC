@@ -2,7 +2,7 @@ SSE.Config.FrameTitleFont = "!Agency FB@50#1000"
 SSE.Config.ButtonFont = "!Agency FB@40#1"
 
 SSE.Config.HUDDistance = 300
-SSE.Config.HUDInteractLang = "Drücke [%s] zum interagieren!"
+SSE.Config.HUDInteractLang = "Drücke [%s] zum Interagieren!"
 
 
 
