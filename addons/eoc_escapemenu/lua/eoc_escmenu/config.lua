@@ -39,8 +39,9 @@ CFG.Website     = ""
 
 -- Zusätzliche Einstellungen im "Einstellungen"-Menü.
 -- type: "checkbox" oder "slider" | convar: Client-ConVar die gesetzt wird
+-- Achtung: Von GMod gesperrte ConVars (z. B. fov_desired) können nicht per Lua gesetzt werden
+-- und werden automatisch ausgeblendet.
 CFG.Settings = {
     { type = "checkbox", label = "FPS anzeigen",           convar = "cl_showfps" },
     { type = "checkbox", label = "Multicore Rendering",    convar = "gmod_mcore_test" },
-    { type = "slider",   label = "Sichtfeld (FOV)",        convar = "fov_desired", min = 75, max = 100, decimals = 0 },
 }

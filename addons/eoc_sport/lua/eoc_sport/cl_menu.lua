@@ -27,6 +27,11 @@ local function Button(parent, text, onClick, danger)
         onClick(self)
     end
     b.Paint = function(self, w, h)
+        if SYMUI then
+            local col = SYMUI.PaintButton(self, w, h, danger and "danger" or "default")
+            draw.SimpleText(self.Label, "EoCSport_Head", w / 2, h / 2, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            return
+        end
         local disabled = self:GetDisabled()
         local base = danger and T.red or T.accent
         if disabled then
@@ -464,6 +469,11 @@ function EoCSport.OpenMenu()
     frame:DockPadding(20, 76, 20, 20)
     frame.Paint = function(_, pw, ph)
         Derma_DrawBackgroundBlur(frame, frame.created)
+        if SYMUI then
+            SYMUI.PaintWindow(pw, ph, nil, { header = 62 })
+            SYMUI.PaintEoCHeader("EOC SPORT", "SPORTSYSTEM // ECHOES OF CLONES", "EoCSport_Title", "EoCSport_Small", T.accent)
+            return
+        end
         surface.SetDrawColor(T.panel)
         surface.DrawRect(0, 0, pw, ph)
         surface.SetDrawColor(T.accent)
@@ -474,6 +484,7 @@ function EoCSport.OpenMenu()
         draw.SimpleText("Echoes of Clones · Sportsystem", "EoCSport_Small", pw - 70, 26, T.muted, TEXT_ALIGN_RIGHT)
     end
     frame.created = SysTime()
+    if SYMUI then SYMUI.Skin(frame) end -- Listen, Auswahlfelder usw. im Server-Design
     frame.OnKeyCodePressed = function(_, key)
         if key == KEY_ESCAPE then frame:Close() end
     end

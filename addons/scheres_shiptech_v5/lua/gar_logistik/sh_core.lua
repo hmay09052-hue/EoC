@@ -7,7 +7,7 @@ local cfg = GARLog.Config
 -- Farben (passend zum Echoes of Clones HUD / Crypto-Radio)
 ---------------------------------------------------------------------------
 GARLog.Col = {
-    yellow = Color(255, 190, 50),
+    yellow = Color(252, 178, 73),
     white  = Color(244, 241, 233),
     text   = Color(216, 219, 225),
     soft   = Color(157, 163, 173),

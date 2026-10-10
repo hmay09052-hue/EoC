@@ -56,7 +56,7 @@ function EoCRange.EnsureBadgeTrainings()
     end
     if changed and T.SyncAll then
         T.SyncAll()
-        MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, "Fortbildungen für Schützenabzeichen in SymChars angelegt.\n")
+        MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, "Fortbildungen für Schützenabzeichen in SymChars angelegt.\n")
     end
     return true
 end
@@ -140,7 +140,7 @@ local function WrapArmory()
         end
         return out
     end
-    MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, "Waffenkammer gekoppelt.\n")
+    MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, "Waffenkammer gekoppelt.\n")
 end
 
 hook.Add("InitPostEntity", "EoCRange_Armory", WrapArmory)

@@ -131,7 +131,7 @@ function hradio.errorcatcher.CatchLater(errorMsg)
     hradio.errorcatcher.startupErrors[errorMsg] = true
 end
 
-local YELLOW = Color(255, 190, 50)
+local YELLOW = Color(252, 178, 73)
 local WHITE = Color(244, 241, 233)
 local SOFT = Color(166, 173, 183)
 local MUTED = Color(99, 106, 116)
@@ -187,8 +187,8 @@ function hradio.errorcatcher.open()
 
     close.Paint = function(self, w, h)
         local hover = self:IsHovered()
-        SY_RoundedBox(0, 0, 0, w, h, hover and Color(255, 190, 50, 18) or Color(255, 255, 255, 4))
-        surface.SetDrawColor(hover and Color(255, 190, 50, 95) or LINE)
+        SY_RoundedBox(0, 0, 0, w, h, hover and Color(252, 178, 73, 18) or Color(255, 255, 255, 4))
+        surface.SetDrawColor(hover and Color(252, 178, 73, 95) or LINE)
         surface.DrawOutlinedRect(0, 0, w, h, 1)
         self:SetTextColor(hover and YELLOW or MUTED)
     end
@@ -241,8 +241,8 @@ function hradio.errorcatcher.open()
             local active = activeTab == name
             local hover = self:IsHovered()
 
-            SY_RoundedBox(0, 0, 0, w, h, active and Color(255, 190, 50, 18) or Color(255, 255, 255, hover and 8 or 3))
-            surface.SetDrawColor(active and Color(255, 190, 50, 110) or LINE)
+            SY_RoundedBox(0, 0, 0, w, h, active and Color(252, 178, 73, 18) or Color(255, 255, 255, hover and 8 or 3))
+            surface.SetDrawColor(active and Color(252, 178, 73, 110) or LINE)
             surface.DrawOutlinedRect(0, 0, w, h, 1)
 
             if active then

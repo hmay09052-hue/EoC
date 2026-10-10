@@ -16,7 +16,6 @@ if SERVER then
     AddCSLuaFile("autorun/grn_hud_v1_init.lua")
     AddCSLuaFile("grn_hud_v1/sh_config.lua")
     AddCSLuaFile("grn_hud_v1/cl_hud.lua")
-    AddCSLuaFile("grn_hud_v1/cl_overhead.lua")
 
     safeInclude("grn_hud_v1/sh_config.lua")
 
@@ -30,4 +29,3 @@ end
 
 safeInclude("grn_hud_v1/sh_config.lua")
 safeInclude("grn_hud_v1/cl_hud.lua")
-safeInclude("grn_hud_v1/cl_overhead.lua")

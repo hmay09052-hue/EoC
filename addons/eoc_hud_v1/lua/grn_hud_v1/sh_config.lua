@@ -53,22 +53,4 @@ C.WeaponSwitchVolume = 0.5      -- 0.0 - 1.0
 C.WeaponSwitchFastTimeout = 1.5 -- how long the menu stays visible with hud_fastswitch 1
 C.WeaponSwitchUpdateInterval = 0.10
 
-C.OverheadEnabled = true
-C.OverheadMaxDistance = 850
-C.OverheadZOffset = 18
-C.Overhead3D2DScale = 0.050
-C.OverheadUpdateInterval = 0.35
-C.OverheadCloakNWBools = {
-    "Cloaked",
-    "lscs_cloak",
-    "LSCS_Cloak",
-}
-
--- Player OverHead reference-style presentation.
--- Name -> thin divider -> DarkRP job. No background and no HP/armor bars.
--- Typography enlarged for better readability at normal gameplay distances.
-C.OverheadLineWidth = 240
-C.OverheadLineMinWidth = 220
-C.OverheadLineMaxWidth = 460
-C.OverheadLineThickness = 2
-C.OverheadShadowOffset = 2
+-- Overhead-Namen (Name / Job über dem Kopf) übernimmt SymChars (symchars/ui/cl_overhead.lua).

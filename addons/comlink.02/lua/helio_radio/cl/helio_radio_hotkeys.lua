@@ -13,13 +13,13 @@ local OLD_COOKIE_PREFIX = "hradio_hotkey_" -- Früher gespeicherte Belegungen, w
 -- Alte Feldnamen, die andere Addons (z.B. landas_hud) noch auslesen
 local LEGACY_FIELDS = { "PrimaryChannel", "SecondaryChannel", "F3Channel" }
 
-local YELLOW = SYMUI and SYMUI.LiveAccent() or Color(238, 180, 53) -- #eeb435, Rahmenfarbe der F-Boxen
+local YELLOW = SYMUI and SYMUI.LiveAccent() or Color(252, 178, 73) -- #eeb435, Rahmenfarbe der F-Boxen
 local WHITE = SYMUI and SYMUI.col.text or Color(244, 241, 233)
 local SOFT = SYMUI and SYMUI.col.dim or Color(191, 197, 205)
 local MUTED = SYMUI and SYMUI.col.muted or Color(111, 118, 128)
 local RED = Color(225, 88, 88)
 local BOX_BG = SYMUI and Color(9, 11, 14, 215) or Color(23, 24, 27, 212) -- #17181b, 83 % sichtbar
-local BOX_ACTIVE = SYMUI and SYMUI.LiveAccent(30) or Color(238, 180, 53, 30)
+local BOX_ACTIVE = SYMUI and SYMUI.LiveAccent(30) or Color(252, 178, 73, 30)
 
 local function localState()
     local ply = LocalPlayer()
@@ -307,7 +307,7 @@ local function drawBoxFrame(x, y, w, h, active, flashAlpha)
     end
 
     if flashAlpha and flashAlpha > 0 then
-        SY_RoundedBox(0, x, y, w, h, Color(238, 180, 53, flashAlpha))
+        SY_RoundedBox(0, x, y, w, h, (SYMUI and SYMUI.Accent(flashAlpha) or Color(252, 178, 73, flashAlpha)))
     end
 
     surface.SetDrawColor(YELLOW.r, YELLOW.g, YELLOW.b, active and 255 or 190)

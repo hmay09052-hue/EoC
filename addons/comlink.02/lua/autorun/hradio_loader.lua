@@ -20,9 +20,6 @@ if SERVER then
     resource.AddFile("materials/vgui/hradio/speaker.png")
     resource.AddFile("materials/vgui/hradio/aurebesh_atlas.png")
     resource.AddFile("resource/fonts/rajdhani-regular.ttf")
-    resource.AddFile("resource/fonts/symchars_aurebesh.ttf")
-    resource.AddFile("resource/fonts/symchars_bignoodle.ttf")
-    resource.AddFile("resource/fonts/symchars_robotocondensed.ttf")
 
     -- Comlink-Arm (H = Funk, G = Squad, J = Textfunk, K = Medic)
     resource.AddFile("models/weapons/c_vmaniphradio_comlink.mdl")
@@ -55,8 +52,8 @@ if CLIENT then
         White = Color(244, 241, 233),
         Red = Color(177, 55, 65),
         LightRed = Color(225, 88, 88),
-        Yellow = Color(255, 190, 50),
-        Accent = Color(255, 190, 50)
+        Yellow = Color(252, 178, 73),
+        Accent = Color(252, 178, 73)
     }
     -- SymChars-Design
     if SYMUI then

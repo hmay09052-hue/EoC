@@ -40,5 +40,5 @@ Client("eoc_range/cl_draw.lua")
 Client("eoc_range/cl_ui.lua")
 
 if SERVER then
-    MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, "Schießstand v" .. EoCRange.Version .. " geladen.\n")
+    MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, "Schießstand v" .. EoCRange.Version .. " geladen.\n")
 end

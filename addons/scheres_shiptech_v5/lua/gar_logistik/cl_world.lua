@@ -242,7 +242,7 @@ function GARLog.DrawTerminal(ent)
         { { "E: LOGISTIKKONSOLE ÖFFNEN", C.soft } }, GARLog.GetLocStatus(id))
 end
 
-local padYellow = Color(255, 190, 50, 200)
+local padYellow = Color(252, 178, 73, 200)
 function GARLog.DrawCargoPad(ent)
     if EyePos():DistToSqr(ent:GetPos()) > 800 * 800 then return end
     local mi, ma = ent:OBBMins(), ent:OBBMaxs()

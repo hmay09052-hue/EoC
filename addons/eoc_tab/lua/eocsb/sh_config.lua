@@ -143,7 +143,7 @@ local JOBS_SGT_PLUS = {
 for _, j in ipairs(JOBS_SGT_PLUS) do JOBS_CPL_PLUS[#JOBS_CPL_PLUS + 1] = j end
 
 CFG.OfficerRanks = {
-    { id = "co", name = "Commanding Officer",     short = "CO", color = Color(255, 190, 50),
+    { id = "co", name = "Commanding Officer",     short = "CO", color = Color(252, 178, 73),
       hint = "Sergeant+", minRank = "Sergeant", jobs = JOBS_SGT_PLUS },
     { id = "xo", name = "Executive Officer",      short = "XO", color = Color(230, 140, 60),
       hint = "Corporal+", minRank = "Corporal", jobs = JOBS_CPL_PLUS },

@@ -9,8 +9,8 @@ local SND_CLICK = 'buttons/lightswitch2.wav'
 
 -- Farben passend zum Echoes of Clones HUD (werden mit SymChars auf das Server-Design umgestellt)
 local P = {
-    yellow  = Color(255, 190, 50),
-    yellowD = Color(255, 190, 50, 56),
+    yellow  = Color(252, 178, 73),
+    yellowD = Color(252, 178, 73, 56),
     white   = Color(244, 241, 233),
     text    = Color(216, 219, 225),
     soft    = Color(157, 163, 173),

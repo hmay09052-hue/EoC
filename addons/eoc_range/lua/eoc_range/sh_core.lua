@@ -144,7 +144,7 @@ function EoCRange.UnitColor(id)
         local f = symchars.factions.Get(id)
         if f and f.GetColor then return f:GetColor() end
     end
-    return Color(255, 190, 50)
+    return Color(252, 178, 73)
 end
 
 -- Einheit eines Spielers: id, Anzeigename

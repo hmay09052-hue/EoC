@@ -192,7 +192,7 @@ local CAT_COLORS = {
     examine = Color(168, 174, 180),
     bandage = Color(225, 88, 88),
     meds = Color(90, 170, 255),
-    advanced = Color(255, 190, 50),
+    advanced = Color(252, 178, 73),
     drag = Color(154, 162, 173)
 }
 

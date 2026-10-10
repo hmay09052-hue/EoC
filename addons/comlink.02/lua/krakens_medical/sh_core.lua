@@ -766,7 +766,7 @@ end
 KMS.TriageLevels = {
     { id = 0, key = "triage_none", color = Color(101, 107, 117) },
     { id = 1, key = "triage_t1", color = Color(225, 88, 88) },
-    { id = 2, key = "triage_t2", color = Color(255, 190, 50) },
+    { id = 2, key = "triage_t2", color = Color(252, 178, 73) },
     { id = 3, key = "triage_t3", color = Color(74, 203, 130) },
     { id = 4, key = "triage_t4", color = Color(30, 30, 30) },
 }
@@ -1558,7 +1558,7 @@ if CLIENT then
         critical = Color(225, 88, 88),
         open = Color(255, 150, 60),
         treated = Color(90, 170, 255),
-        warning = Color(255, 190, 50),
+        warning = Color(252, 178, 73),
     }
 
     local function MenuIcon(name)
@@ -1660,7 +1660,7 @@ if CLIENT then
     end
 
     -- Echoes of Clones Server-Design (grn_hud_v1): gelber Akzent, dunkle Panels, helle Haarlinien
-    KMS.ThemeAccent = Color(255, 190, 50)
+    KMS.ThemeAccent = Color(252, 178, 73)
     local THEME = {
         Background     = Color(7, 9, 12, 240),
         BackgroundDark = Color(5, 7, 10, 250),

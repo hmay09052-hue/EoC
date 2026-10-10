@@ -1,6 +1,6 @@
 --[[
     EoC Range – Client: Schriften, Farben, Synchronisation, HUD (Countdown, Live-Wertung, Banner)
-    Design wie Funksystem und ShipTech: dunkle flache Panels, gelber Akzent, Bebas Neue / Montserrat.
+    Design: Server-Design (SymChars) – dunkle kantige Panels, Bernstein-Akzent, BigNoodle / Roboto Condensed.
 ]]
 
 local C = EoCRange.Config
@@ -8,11 +8,12 @@ local C = EoCRange.Config
 ---------------------------------------------------------------------------
 -- Schriften
 ---------------------------------------------------------------------------
+-- Server-Design (SymChars): Überschriften BigNoodle, Text Roboto Condensed. Ohne SymChars die alten Schriften.
 local function Bebas(name, size)
-    surface.CreateFont(name, { font = "Bebas Neue", size = size, weight = 400, antialias = true, extended = true })
+    surface.CreateFont(name, { font = SYMUI and SYMUI.FontFace("head") or "Bebas Neue", size = size, weight = 400, antialias = true, extended = true })
 end
 local function Mont(name, size, weight)
-    surface.CreateFont(name, { font = "Montserrat", size = size, weight = weight or 500, antialias = true, extended = true })
+    surface.CreateFont(name, { font = SYMUI and SYMUI.FontFace("body") or "Montserrat", size = size, weight = weight or 500, antialias = true, extended = true })
 end
 
 Bebas("EoCR_HoloTitle", 58)
@@ -41,9 +42,9 @@ surface.CreateFont("EoCR_AurebeshBig", { font = "Aurebesh", size = 40, weight = 
 
 -- Farbpalette (identisch zum Funksystem / ShipTech)
 EoCRange.Colors = {
-    yellow  = Color(255, 190, 50),
-    yellowD = Color(255, 190, 50, 56),
-    yellowF = Color(255, 190, 50, 20),
+    yellow  = Color(252, 178, 73),
+    yellowD = Color(252, 178, 73, 56),
+    yellowF = Color(252, 178, 73, 20),
     white   = Color(244, 241, 233),
     text    = Color(216, 219, 225),
     soft    = Color(157, 163, 173),
@@ -60,6 +61,7 @@ EoCRange.Colors = {
     orange  = Color(255, 140, 60),
 }
 local P = EoCRange.Colors
+if SYMUI then SYMUI.ApplyEoCPalette(P) end -- SymChars-Design (gleicher Akzent und gleiche Flächen wie überall)
 
 ---------------------------------------------------------------------------
 -- Zustand

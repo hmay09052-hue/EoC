@@ -11,7 +11,7 @@ local EoC = {}
 ---------------------------------------------------------------------
 EoC.Interval    = 300                          -- Sekunden (300 = 5 Minuten)
 EoC.Prefix      = "[EoC] "
-EoC.PrefixColor = Color(255, 170, 0)           -- Farbe vom [EoC]
+EoC.PrefixColor = Color(252, 178, 73)           -- Farbe vom [EoC]
 EoC.TextColor   = Color(236, 233, 224)         -- Farbe vom Text
 
 -- false = alle Nachrichten zusammen alle 5 Min

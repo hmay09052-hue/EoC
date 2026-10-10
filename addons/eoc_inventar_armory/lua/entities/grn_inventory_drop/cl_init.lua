@@ -35,9 +35,9 @@ function ENT:DrawTranslucent()
             return
         end
         draw.RoundedBox(4, -150, -30, 300, 60, Color(6, 10, 18, 220))
-        surface.SetDrawColor(255, 190, 50, 220)
+        surface.SetDrawColor(252, 178, 73, 220)
         surface.DrawRect(-150, -30, 4, 60)
         draw.SimpleText(string.upper(def.Name or self:GetItemID()), "DermaLarge", 0, -13, Color(235, 241, 248), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText("x" .. tostring(self:GetItemQuantity()), "DermaDefaultBold", 0, 13, Color(255, 190, 50), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("x" .. tostring(self:GetItemQuantity()), "DermaDefaultBold", 0, 13, Color(252, 178, 73), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     cam.End3D2D()
 end

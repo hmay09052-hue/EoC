@@ -624,7 +624,7 @@ net.Receive("grn_armory_v4_notify", function()
         local wrapped = util.TableToJSON({ tostring(message or "") }, false) or "[\"\"]"
         S.ArmoryHTMLPanel:QueueJavascript("if(window.GRNArmoryUI){window.GRNArmoryUI.toast((" .. wrapped .. ")[0]);}")
     else
-        chat.AddText(Color(255, 190, 50), "[Waffenkammer] ", Color(220, 228, 238), tostring(message or ""))
+        chat.AddText(Color(252, 178, 73), "[Waffenkammer] ", Color(220, 228, 238), tostring(message or ""))
     end
 end)
 

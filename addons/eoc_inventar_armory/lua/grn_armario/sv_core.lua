@@ -23,7 +23,7 @@ sql.Query([[CREATE TABLE IF NOT EXISTS grn_armario_appearance (
 
 local function debugPrint(...)
     if not C.Debug then return end
-    MsgC(Color(255, 190, 50), "[GRN Wardrobe] ", color_white, table.concat({...}, " "), "\n")
+    MsgC(Color(252, 178, 73), "[GRN Wardrobe] ", color_white, table.concat({...}, " "), "\n")
 end
 
 local function safeCall(fn, ...)

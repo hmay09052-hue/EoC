@@ -4,7 +4,7 @@ local C = EoCSport.Config
 local States = EoCSport.States
 
 ---------------------------------------------------------------------------
--- Design (wie die anderen EoC-Addons)
+-- Design (Server-Design über SYMUI, Fallback ohne SymChars)
 ---------------------------------------------------------------------------
 local T = {
     bg = Color(12, 15, 20, 235),
@@ -12,23 +12,33 @@ local T = {
     panel2 = Color(30, 35, 44, 255),
     hover = Color(40, 46, 57, 255),
     line = Color(255, 255, 255, 14),
-    accent = Color(255, 190, 50),
-    accentDim = Color(255, 190, 50, 40),
+    accent = Color(252, 178, 73),
+    accentDim = Color(252, 178, 73, 40),
     text = Color(230, 234, 240),
     muted = Color(145, 153, 166),
     green = Color(95, 205, 115),
     red = Color(225, 85, 70),
 }
+-- Server-Design (SymChars): gleiche Flächen, Linien, Texte und lebender Akzent wie alle anderen Menüs
+if SYMUI then
+    local c = SYMUI.col
+    T.bg, T.panel, T.panel2, T.hover = Color(9, 11, 14, 235), c.panel, c.panel2, c.panel3
+    T.line, T.text, T.muted, T.green, T.red = c.line, c.text, c.dim, c.green, c.red
+    T.accent, T.accentDim = SYMUI.LiveAccent(), SYMUI.LiveAccent(40)
+end
 EoCSport.Theme = T
 
-surface.CreateFont("EoCSport_Huge", { font = "Bebas Neue", size = 120, weight = 500, extended = true })
-surface.CreateFont("EoCSport_Title", { font = "Bebas Neue", size = 36, weight = 500, extended = true })
-surface.CreateFont("EoCSport_Counter", { font = "Bebas Neue", size = 40, weight = 500, extended = true })
-surface.CreateFont("EoCSport_Head", { font = "Bebas Neue", size = 24, weight = 500, extended = true })
-surface.CreateFont("EoCSport_Sign", { font = "Bebas Neue", size = 52, weight = 500, extended = true })
-surface.CreateFont("EoCSport_Text", { font = "Montserrat", size = 16, weight = 500, extended = true })
-surface.CreateFont("EoCSport_TextBold", { font = "Montserrat", size = 16, weight = 700, extended = true })
-surface.CreateFont("EoCSport_Small", { font = "Montserrat", size = 13, weight = 500, extended = true })
+local HEAD = SYMUI and SYMUI.FontFace("head") or "Bebas Neue"
+local BODY = SYMUI and SYMUI.FontFace("body") or "Montserrat"
+
+surface.CreateFont("EoCSport_Huge", { font = HEAD, size = 120, weight = 500, extended = true })
+surface.CreateFont("EoCSport_Title", { font = HEAD, size = 36, weight = 500, extended = true })
+surface.CreateFont("EoCSport_Counter", { font = HEAD, size = 40, weight = 500, extended = true })
+surface.CreateFont("EoCSport_Head", { font = HEAD, size = 24, weight = 500, extended = true })
+surface.CreateFont("EoCSport_Sign", { font = HEAD, size = 52, weight = 500, extended = true })
+surface.CreateFont("EoCSport_Text", { font = BODY, size = 16, weight = 500, extended = true })
+surface.CreateFont("EoCSport_TextBold", { font = BODY, size = 16, weight = 700, extended = true })
+surface.CreateFont("EoCSport_Small", { font = BODY, size = 13, weight = 500, extended = true })
 
 function EoCSport.Chat(msg)
     chat.AddText(T.accent, "[Sport] ", T.text, msg)

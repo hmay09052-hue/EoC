@@ -63,7 +63,7 @@ if SERVER then
     end
 else
     local red, green = Color(225, 88, 88), Color(74, 203, 130)
-    local yellow = Color(255, 190, 50)
+    local yellow = Color(252, 178, 73)
 
     function ENT:Draw()
         self:DrawModel()

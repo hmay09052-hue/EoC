@@ -29,7 +29,7 @@ function hradio.ShowGRNCommsBlocked(message)
 
     notification.AddLegacy(message, NOTIFY_ERROR, 4)
     surface.PlaySound("buttons/button10.wav")
-    chat.AddText(Color(255, 190, 50), "[FUNK] ", Color(244, 241, 233), message)
+    chat.AddText(Color(252, 178, 73), "[FUNK] ", Color(244, 241, 233), message)
 end
 
 local function closeRadioMenus()
@@ -136,7 +136,7 @@ net.Receive("hRadio_GRNCommsState", function()
         notification.AddLegacy("Der Funk ist wieder verfügbar.", NOTIFY_GENERIC, 4)
         surface.PlaySound("buttons/button9.wav")
         chat.AddText(
-            Color(255, 190, 50),
+            Color(252, 178, 73),
             "[FUNK] ",
             Color(244, 241, 233),
             "Alle Funks funktionieren wieder."

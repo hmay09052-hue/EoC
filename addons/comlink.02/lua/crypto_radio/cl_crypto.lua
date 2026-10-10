@@ -13,9 +13,9 @@ local SHORT, LONG = CryptoRadio.RANGE_SHORT, CryptoRadio.RANGE_LONG
 
 -- Farben passend zum Echoes of Clones HUD (grn_hud_v1)
 local C = {
-    yellow  = Color(255, 190, 50),
-    yellowD = Color(255, 190, 50, 56),
-    yellowF = Color(255, 190, 50, 20),
+    yellow  = Color(252, 178, 73),
+    yellowD = Color(252, 178, 73, 56),
+    yellowF = Color(252, 178, 73, 20),
     white   = Color(244, 241, 233),
     text    = Color(216, 219, 225),
     soft    = Color(157, 163, 173),

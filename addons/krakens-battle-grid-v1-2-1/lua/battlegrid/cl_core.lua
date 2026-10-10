@@ -90,7 +90,7 @@ theme.CableColors = {
     Color(230, 85, 85),
     Color(80, 200, 120),
     Color(80, 160, 255),
-    Color(255, 190, 50),
+    Color(252, 178, 73),
     Color(200, 80, 255),
     Color(0, 225, 255),
 }
@@ -112,7 +112,7 @@ theme.Size = {
 }
 
 KF.Fonts.Create(AID)
-KF.UI.ApplyAccentColor(AID, Color(255, 190, 50))
+KF.UI.ApplyAccentColor(AID, Color(252, 178, 73))
 hook.Add("OnScreenSizeChanged", "BattleGrid.RebuildFonts", function() KF.Fonts.Create(AID) end)
 
 function BattleGrid.F(name) return KF.Fonts.Get(AID, name) end

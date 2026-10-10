@@ -83,7 +83,7 @@ C.FOBHud = true
 -- Versorgungslage (Füllstand) -> Anzeige
 C.SupplyStatus = {
     { min = 0.60, name = "STABIL",     color = Color( 74, 203, 130) },
-    { min = 0.30, name = "ANGESPANNT", color = Color(255, 190,  50) },
+    { min = 0.30, name = "ANGESPANNT", color = Color(252, 178,  73) },
     { min = 0.10, name = "KRITISCH",   color = Color(235, 135,  60) },
     { min = 0.00, name = "ERSCHÖPFT",  color = Color(225,  88,  88) },
 }
@@ -189,7 +189,7 @@ local AVP_JOBS = {
 -- Techniker, Navy und Piloten nur über die genauen Jobnamen (keine Schlüsselwörter / Kategorien),
 -- damit kein anderer Job versehentlich dazugezählt wird (AVP liegt auch in der Kategorie "Republic Navy").
 C.Roles = {
-    logistik  = { name = "Logistik",  color = Color(255, 190,  50), jobs = {},            categories = { "Logistik" },         usergroups = {}, keywords = { "logist", "quartiermeister", "versorgung", "nachschub" } },
+    logistik  = { name = "Logistik",  color = Color(252, 178,  73), jobs = {},            categories = { "Logistik" },         usergroups = {}, keywords = { "logist", "quartiermeister", "versorgung", "nachschub" } },
     navy      = { name = "Navy",      color = Color( 90, 170, 255), jobs = NAVY_JOBS,     categories = {},                     usergroups = {}, keywords = {} },
     kommando  = { name = "Kommando",  color = Color(190, 120, 255), jobs = {},            categories = { "Kommando", "Jedi" }, usergroups = {}, keywords = { "commander", "kommandant", "general", "marshal", "offizier", "jedi" } },
     techniker = { name = "Techniker", color = Color( 80, 200, 220), jobs = ENGINEER_JOBS, categories = {},                     usergroups = {}, keywords = {} },
@@ -262,7 +262,7 @@ C.Reports = {
     },
     States = {
         { name = "EINSATZBEREIT",  color = Color( 74, 203, 130) },
-        { name = "EINGESCHRÄNKT",  color = Color(255, 190,  50) },
+        { name = "EINGESCHRÄNKT",  color = Color(252, 178,  73) },
         { name = "AUSSER BETRIEB", color = Color(225,  88,  88) },
         { name = "IN WARTUNG",     color = Color( 80, 200, 220) },
     },

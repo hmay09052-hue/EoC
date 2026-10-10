@@ -52,7 +52,8 @@ UI.col = {
 }
 
 function UI.Accent(alpha)
-    local c = UI.AccentColor or Color(252, 178, 73)
+    -- Akzent live aus SymChars (Server-Einstellung), damit ShipTech/Logistik/EVA immer dieselbe Farbe zeigen
+    local c = (SYMUI and SYMUI.Accent and SYMUI.Accent()) or UI.AccentColor or Color(252, 178, 73)
     if alpha then return Color(c.r, c.g, c.b, alpha) end
     return c
 end

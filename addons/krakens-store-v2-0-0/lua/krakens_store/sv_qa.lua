@@ -319,7 +319,7 @@ end
 
 local function Report(run, T)
     local ok = not T.failed
-    MsgC(Color(255, 190, 50), "[KS QA] ", ok and Color(80, 255, 80) or Color(255, 80, 80), ok and "PASS " or "FAIL ",
+    MsgC(Color(252, 178, 73), "[KS QA] ", ok and Color(80, 255, 80) or Color(255, 80, 80), ok and "PASS " or "FAIL ",
         Color(255, 255, 255), T.def.system .. " / " .. T.def.title, "\n")
     for _, row in ipairs(T.rows) do
         MsgC(row.ok and Color(80, 255, 80) or Color(255, 80, 80), row.ok and "   PASS - " or "   FAIL - ",
@@ -335,7 +335,7 @@ local function Finish(run)
     hook.Remove("Think", "KSQA_Runner")
     Run = nil
     local failed = run.checks - run.passed
-    MsgC(Color(255, 190, 50), "[KS QA] ", Color(255, 255, 255),
+    MsgC(Color(252, 178, 73), "[KS QA] ", Color(255, 255, 255),
         string.format("%d checks, %d passed, %d failed\n", run.checks, run.passed, failed))
     for _, row in ipairs(run.failures) do
         MsgC(Color(255, 80, 80), "   FAIL ", Color(220, 220, 220),
@@ -349,7 +349,7 @@ local function Start(run, id)
     run.index = run.index + 1
     local T = NewContext(def, run.ply, run.index)
     run.current = T
-    MsgC(Color(255, 190, 50), "[KS QA] ", Color(255, 255, 255), "running " .. def.title .. "\n")
+    MsgC(Color(252, 178, 73), "[KS QA] ", Color(255, 255, 255), "running " .. def.title .. "\n")
     T.co = coroutine.create(function()
         local ok, err = pcall(def.run, T)
         if not ok then T:Check("scenario completed without error", false, err) end
@@ -400,7 +400,7 @@ function QA.Run(ids, ply)
     Run = { queue = ids, cursor = 1, index = 0, ply = ply, checks = 0, passed = 0, failures = {} }
     Instrument(Run)
     hook.Add("Think", "KSQA_Runner", Pump)
-    MsgC(Color(255, 190, 50), "[KS QA] ", Color(255, 255, 255), "starting " .. #ids .. " scenario(s)\n")
+    MsgC(Color(252, 178, 73), "[KS QA] ", Color(255, 255, 255), "starting " .. #ids .. " scenario(s)\n")
 end
 
 function QA.Command(ply, args)

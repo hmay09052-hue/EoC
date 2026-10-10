@@ -21,7 +21,7 @@ local function buildChannelData()
         end
 
         local canTalk = channel.GetTalkers(ply) or channel.Talkers[ply:Team()] or false
-        local color = channel.Color or Color(255, 190, 50)
+        local color = channel.Color or Color(252, 178, 73)
         local slot = hradio.GetChannelHotkey and hradio.GetChannelHotkey(index)
         local slotDef = slot and hradio.GetHotkeySlots()[slot]
 
@@ -398,7 +398,7 @@ function render(){
             if(ch.muted) cls += " muted";
 
             row.className = cls;
-            row.style.setProperty("--channel", ch.color || "rgb(255,190,50)");
+            row.style.setProperty("--channel", ch.color || "rgb(252,178,73)");
             row.onclick = function(){ selectChannel(ch.id); };
 
             var status = "";

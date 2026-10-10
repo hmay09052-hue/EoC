@@ -15,7 +15,7 @@ function EoCRange.Log(actor, action, text)
     local who = IsValid(actor) and (actor:Nick() .. " (" .. actor:SteamID() .. ")") or "System"
     local line = os.date("%H:%M:%S") .. " [" .. action .. "] " .. who .. ": " .. tostring(text)
     file.Append("eoc_range/logs/" .. os.date("%Y-%m-%d") .. ".txt", line .. "\n")
-    MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, line .. "\n")
+    MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, line .. "\n")
 end
 
 local function ReadLogs(days, max)
@@ -108,7 +108,7 @@ end
 hook.Add("InitPostEntity", "EoCRange_Load", function()
     timer.Simple(3, function()
         EoCRange.LoadEntities(function(n)
-            if n > 0 then MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, n .. " Schießstand-Entities geladen.\n") end
+            if n > 0 then MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, n .. " Schießstand-Entities geladen.\n") end
         end)
     end)
 end)

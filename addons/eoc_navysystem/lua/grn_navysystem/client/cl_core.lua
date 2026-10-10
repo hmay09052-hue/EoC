@@ -47,7 +47,7 @@ local function buildMainHTML()
             --bg-color: rgba(20, 20, 20, 0.7);
             --text-color: #ffffff;
             --border-color: rgba(255, 255, 255, 0.1);
-            --border-radius: 6px;
+            --border-radius: 0;
             --accent: #58b7ff;
             --danger: #ff6b6b;
         }
@@ -104,7 +104,7 @@ local function buildMainHTML()
         li small { display: block; opacity: 0.7; margin-top: 3px; font-size: 11px; }
         
         .mini { font-size: 11px; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 6px; background: rgba(255, 255, 255, 0.1); }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 0; font-size: 10px; margin-left: 6px; background: rgba(255, 255, 255, 0.1); }
         
         .footer { padding: 12px 14px; border-top: 1px solid var(--border-color); display: flex; gap: 8px; background: rgba(0,0,0,0.2); }
         .grow { flex: 1; }
@@ -114,7 +114,7 @@ local function buildMainHTML()
         /* Minimalist Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 0; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
     </style>
 </head>
@@ -295,7 +295,7 @@ local function mainFrame()
     local dhtml = vgui.Create("DHTML", fr)
     dhtml:Dock(FILL)
     local page = buildMainHTML()
-    if SYMUI then page = SYMUI.ThemeHTML(page, { css = ":root{--border-radius:0px}" }) end
+    if SYMUI then page = SYMUI.ThemeHTML(page, { css = ":root{--border-radius:0}" }) end
     dhtml:SetHTML(page)
     fr.HTML = dhtml
 

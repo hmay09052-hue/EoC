@@ -50,6 +50,17 @@ local function Accent()
     return CFG.Accent
 end
 
+-- GMod sperrt einige Befehle für Lua (z. B. fov_desired). Gesperrte Befehle werden übersprungen statt Fehler zu werfen.
+local function Blocked(cmd)
+    return IsConCommandBlocked and IsConCommandBlocked(cmd) or false
+end
+
+local function SafeCmd(cmd, ...)
+    if Blocked(cmd) then return false end
+    RunConsoleCommand(cmd, ...)
+    return true
+end
+
 local function Snd(name)
     if cvSound:GetBool() then surface.PlaySound(name) end
 end
@@ -172,7 +183,7 @@ local function SettingToggle(parent, label, convar)
     function row:DoClick()
         if not cv then return end
         Snd("ui/buttonclickrelease.wav")
-        RunConsoleCommand(convar, cv:GetBool() and "0" or "1")
+        SafeCmd(convar, cv:GetBool() and "0" or "1")
     end
 
     function row:Paint(w, h)
@@ -229,7 +240,7 @@ local function SettingSlider(parent, label, convar, min, max, decimals)
     end
     function slider:TranslateValues(x, y)
         local v = math.Round(min + (max - min) * x, decimals)
-        if cv and v ~= math.Round(cv:GetFloat(), decimals) then RunConsoleCommand(convar, tostring(v)) end
+        if cv and v ~= math.Round(cv:GetFloat(), decimals) then SafeCmd(convar, tostring(v)) end
         return x, y
     end
     return row
@@ -353,7 +364,7 @@ function PANEL:ShowPage(page)
         if CFG.Workshop ~= "" then MenuItem(c, "Workshop-Kollektion", function() gui.OpenURL(CFG.Workshop) end) end
         if CFG.Website ~= ""  then MenuItem(c, "Webseite", function() gui.OpenURL(CFG.Website) end) end
         Gap(c)
-        MenuItem(c, "Erneut verbinden", function() RunConsoleCommand("retry") end)
+        if not Blocked("retry") then MenuItem(c, "Erneut verbinden", function() SafeCmd("retry") end) end
         MenuItem(c, "Server verlassen", function() menu:ShowPage("confirm_leave") end, true)
 
     elseif page == "settings" then
@@ -362,7 +373,9 @@ function PANEL:ShowPage(page)
         SettingToggle(c, "Hintergrund-Unschärfe", "eoc_escmenu_blur")
         SettingToggle(c, "Menü-Sounds", "eoc_escmenu_sounds")
         for _, s in ipairs(CFG.Settings or {}) do
-            if s.type == "checkbox" then
+            if Blocked(s.convar) then
+                -- von GMod gesperrt, nicht anzeigen
+            elseif s.type == "checkbox" then
                 SettingToggle(c, s.label, s.convar)
             elseif s.type == "slider" then
                 SettingSlider(c, s.label, s.convar, s.min or 0, s.max or 1, s.decimals or 0)
@@ -372,7 +385,7 @@ function PANEL:ShowPage(page)
         MenuItem(c, "Spieloptionen", function()
             menu:Close()
             gui.ActivateGameUI()
-            RunConsoleCommand("gamemenucommand", "openoptionsdialog")
+            SafeCmd("gamemenucommand", "openoptionsdialog")
         end)
 
     elseif page == "confirm_leave" then
@@ -384,7 +397,7 @@ function PANEL:ShowPage(page)
             draw.SimpleText("Du wirst vom Server getrennt.", "EOC.Esc.Name", S(22), S(54), CFG.TextDim, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
         Gap(c, 14)
-        MenuItem(c, "Ja, verlassen", function() RunConsoleCommand("disconnect") end, true)
+        MenuItem(c, "Ja, verlassen", function() SafeCmd("disconnect") end, true)
         MenuItem(c, "Abbrechen", function() menu:ShowPage("main") end)
     end
 end

@@ -70,7 +70,7 @@ button{border:0;outline:0;background:none;cursor:pointer}
 .sliderInput{flex:1 1 auto}
 .sliderValue{width:26px;flex:0 0 26px;text-align:center;font-size:10px;color:#fff}
  input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:14px;background:transparent;outline:none}
- input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(90deg,#73a5ed var(--fill,0%),rgba(214,222,235,.62) var(--fill,0%));border-radius:3px}
+ input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(90deg,#73a5ed var(--fill,0%),rgba(214,222,235,.62) var(--fill,0%));border-radius:0}
  input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;margin-top:-4px;background:#e9edf3;border:1px solid rgba(255,255,255,.8);box-shadow:0 0 10px rgba(115,165,237,.35)}
 .headingRow{position:relative;z-index:4;display:flex;align-items:flex-start;gap:16px;min-height:132px}
 .headingIcon{width:58px;height:58px;flex:0 0 58px;display:flex;align-items:center;justify-content:center;margin-top:3px;color:#fff;border:1px solid rgba(115,165,237,.18);background:rgba(77,128,202,.08);font-family:"Bebas Neue",Arial,sans-serif;font-size:28px;letter-spacing:.04em;overflow:hidden}.headingIcon img{width:100%;height:100%;object-fit:contain;display:block;padding:6px}

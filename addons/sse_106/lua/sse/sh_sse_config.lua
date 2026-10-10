@@ -13,7 +13,7 @@ SSE.Config.HUD = {
     AurebeshColor = Color(235, 235, 235),
     InteractColor = Color(255, 255, 255),
     Background = Color(15, 15, 18, 170),
-    Accent = Color(230, 150, 50, 200),
+    Accent = Color(252, 178, 73, 200),
 }
 
 

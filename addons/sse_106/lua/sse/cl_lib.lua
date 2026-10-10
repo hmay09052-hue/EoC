@@ -80,13 +80,19 @@ function SSE.xFont(font, defaultSize)
 		end
 
 		weight = weight or 1  -- Default weight if not specified
-        print(weight)
 
 		local fontName = string.format("SSE_%s_%d_%d", name, size, weight)
 		_imguiFontToGmodFont[font] = fontName
 		if not _createdFonts[fontName] then
+			-- Server-Design: Agency FB -> SymChars-Überschrift, Roboto -> SymChars-Text
+			local face = name
+			if SYMUI then
+				if name == "Agency FB" then face = SYMUI.FontFace("head")
+				elseif string.find(string.lower(name), "roboto", 1, true) then face = SYMUI.FontFace("body") end
+			end
 			surface.CreateFont(fontName, {
-				font = name,
+				font = face,
+				extended = true,
 				size = SSE.Scale(size),
 				weight = weight
 			})
@@ -134,6 +140,10 @@ function SSE:DefaultFrame(title)
     local lineColor = Color(255, 255, 255)
 
     function MainFrame:Paint(w, h)
+        if SYMUI then -- Server-Design (SymChars)
+            SYMUI.PaintWindow(w, h, nil, { header = 0 })
+            return
+        end
         draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 210))
         draw.RoundedBox(0, 10, 10, 5, h - 20, lineColor)
         draw.RoundedBox(0, 10, 10, w - btnWide - 30, 5, lineColor)
@@ -166,6 +176,14 @@ function SSE:DefaultFrame(title)
         surface.SetFont(currentFont)
         local textW, textH = surface.GetTextSize(title)
         self:SetTall(textH)
+        if SYMUI then
+            draw.DrawText(title, currentFont, 0, 0, SYMUI.col.text, TEXT_ALIGN_LEFT)
+            surface.SetDrawColor(SYMUI.Accent())
+            surface.DrawRect(0, h - 3, math.min(80, w), 2)
+            surface.SetDrawColor(SYMUI.col.line2)
+            surface.DrawRect(math.min(80, w), h - 3, math.max(0, w - 80), 1)
+            return
+        end
         draw.RoundedBox(0, 0, 0, textW + textPadding, h - 3, Color(255, 255, 255))
         draw.DrawText(title, currentFont, 10, 0, Color(0, 0, 0), TEXT_ALIGN_LEFT)
     end
@@ -174,6 +192,11 @@ function SSE:DefaultFrame(title)
     CloseButton:SetText("")
 
     function CloseButton:Paint(w, h)
+        if SYMUI then
+            local col = SYMUI.PaintButton(self, w, h, "danger")
+            draw.SimpleText("X", "symchars.small.bold", w / 2, h / 2, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            return
+        end
         draw.RoundedBox(0, 0, 0, w, h, Color(155, 0, 0, 255))
     end
 
@@ -229,6 +252,13 @@ function SSE:Button(panel, text, func, style)
     DButton.txtcl = DButton.textcolor
     DButton.akzentsize = 3
     DButton.fillcolor = Color(0,0,0,200)
+    if SYMUI then -- Server-Design: dunkle Fläche, Akzent beim Überfahren
+        DButton.akzent = SYMUI.col.line3
+        DButton.akzenthover = SYMUI.LiveAccent()
+        DButton.textcolor = SYMUI.col.dim
+        DButton.textcolorhover = SYMUI.col.text
+        DButton.fillcolor = SYMUI.col.panel2
+    end
     local top = string.find(style, "t")
     local bot = string.find(style, "b")
     local left = string.find(style, "l")
@@ -284,6 +314,11 @@ function SSE:TextEntry(panel,placeholder)
     TextEntry:SetDrawBackground(false)
     TextEntry:SetDrawBorder(true)
     function TextEntry:PaintOver(w,h) 
+        if SYMUI then
+            surface.SetDrawColor(self:HasFocus() and SYMUI.Accent() or SYMUI.col.line2)
+            surface.DrawOutlinedRect(0,0,w,h,1)
+            return
+        end
         surface.SetDrawColor( 255, 255, 255, 128 )
         surface.DrawOutlinedRect(0,0,w,h,1)
         return
@@ -307,6 +342,7 @@ function SSE:ScrollBar(parent)
         --draw.RoundedBox(0, SSEW(5), 0, SSEW(10), h, Color(175, 175, 175))
     end
     function sbar.btnGrip:Paint(w, h)
+        if SYMUI then draw.RoundedBox(0, SSEW(5), 0, SSEW(10), h, SYMUI.Accent(self:IsHovered() and 255 or 150)) return end
         draw.RoundedBox(0, SSEW(5), 0, SSEW(10), h, Color(255, 255, 255))
     end
 

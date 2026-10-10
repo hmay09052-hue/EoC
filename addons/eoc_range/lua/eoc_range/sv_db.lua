@@ -134,7 +134,7 @@ function DB.Init(done)
             useMySQL = true
             function conn:onConnected()
                 connected = true
-                MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, "MySQL verbunden.\n")
+                MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, "MySQL verbunden.\n")
                 local pending = queue
                 queue = {}
                 DB.Sequence(Schema(), function()

@@ -278,6 +278,10 @@ end
 local ChargeBarCol = { White = Color(255,255,255), DefCol1 = Color(255,50,50), DefCol2 = Color(50,255,50) }
 local Gradient = Material( "gui/gradient" )
 local function DrawChargeBar( xpos, ypos, width, height, charge, col1, col2 )
+	if SYMUI then -- Server-Design (SymChars)
+		SYMUI.Bar( xpos, ypos, width, height, math.Clamp( charge or 50, 0, 100 ) / 100, SYMUI.Accent() )
+		return
+	end
 	draw.NoTexture()
 	
 	surface.SetDrawColor( ChargeBarCol.White )

@@ -7,7 +7,7 @@ hradio = hradio or {}
 -- Jede Zeile = ein Sprecher: gelber Strich + Punkt, Funkname (in Funkfarbe), Spielername rechts.
 -- Mehrere Sprecher stehen untereinander, der eigene Funk steht ganz oben.
 
-local YELLOW = SYMUI and SYMUI.LiveAccent() or Color(238, 180, 53) -- #eeb435, wie die F-Boxen
+local YELLOW = SYMUI and SYMUI.LiveAccent() or Color(252, 178, 73) -- #eeb435, wie die F-Boxen
 local WHITE = SYMUI and SYMUI.col.text or Color(244, 241, 233)
 local MUTED = SYMUI and SYMUI.col.muted or Color(111, 118, 128)
 local ROW_BG = SYMUI and Color(9, 11, 14, 215) or Color(23, 24, 27, 212) -- #17181b, wie die F-Boxen

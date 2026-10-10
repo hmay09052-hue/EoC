@@ -18,7 +18,7 @@ local T = {
 local function Click() surface.PlaySound("buttons/lightswitch2.wav") end
 
 ---------------------------------------------------------------------------
--- Bausteine (wie Funksystem / ShipTech)
+-- Bausteine (Server-Design über SYMUI, ohne SymChars eigener flacher Stil)
 ---------------------------------------------------------------------------
 function UI.StyleScroll(scroll)
     local bar = scroll:GetVBar()
@@ -47,6 +47,13 @@ function UI.Frame(title, w, h, sub, status)
     f:SetAlpha(0)
     f:AlphaTo(255, 0.15)
     f.Paint = function(_, pw, ph)
+        if SYMUI then
+            local st, sc
+            if status then st, sc = status() end
+            SYMUI.PaintWindow(pw, ph, nil, { header = 64 })
+            SYMUI.PaintEoCHeader(title, "SCHIESSSTAND // " .. string.upper(sub or ""), "EoCR_UITitle", "EoCR_UISub", T.accent, st, sc or T.dim)
+            return
+        end
         surface.SetDrawColor(T.bg)
         surface.DrawRect(0, 0, pw, ph)
         surface.SetDrawColor(T.panel2)
@@ -84,6 +91,11 @@ function UI.Button(parent, text, col, fn)
     b.Solid = #text > 6 and text == string.upper(text) and col ~= T.dim
     b:SetTall(34)
     b.Paint = function(s, w, h)
+        if SYMUI then
+            local tc = SYMUI.PaintEoCButton(s, w, h, T.red)
+            draw.SimpleText(s.Label, "EoCR_UIBold", w / 2, h / 2, tc, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            return
+        end
         local enabled = s:IsEnabled()
         local hov = s:IsHovered() and enabled
         local bg = s.Active and ColorAlpha(s.Accent, 26) or (hov and T.panel2 or T.panel)

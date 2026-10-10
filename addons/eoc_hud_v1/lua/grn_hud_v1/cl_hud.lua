@@ -50,11 +50,11 @@ local HTML_TEMPLATE = [=[
 
 :root{
 
-    --yellow:rgb(255,190,50);
+    --yellow:rgb(252,178,73);
 
-    --yellow-soft:rgba(255,190,50,.68);
-    --yellow-dim:rgba(255,190,50,.22);
-    --yellow-faint:rgba(255,190,50,.08);
+    --yellow-soft:rgba(252,178,73,.68);
+    --yellow-dim:rgba(252,178,73,.22);
+    --yellow-faint:rgba(252,178,73,.08);
 
     --white:#f4f1e9;
     --text:#d8dbe1;
@@ -235,7 +235,7 @@ body.no-overlay .screenCorner{
             180deg,
             transparent,
             var(--yellow-soft) 16%,
-            rgba(255,190,50,.12) 50%,
+            rgba(252,178,73,.12) 50%,
             var(--yellow-soft) 84%,
             transparent
         );
@@ -257,9 +257,9 @@ body.no-overlay .screenCorner{
         linear-gradient(
             180deg,
             transparent,
-            rgba(255,190,50,.35) 16%,
-            rgba(255,190,50,.08) 50%,
-            rgba(255,190,50,.35) 84%,
+            rgba(252,178,73,.35) 16%,
+            rgba(252,178,73,.08) 50%,
+            rgba(252,178,73,.35) 84%,
             transparent
         );
 
@@ -384,15 +384,15 @@ body.no-overlay .screenCorner{
 
             transparent 0%,
 
-            rgba(255,190,50,.16) 8%,
+            rgba(252,178,73,.16) 8%,
 
-            rgba(255,190,50,.44) 35%,
+            rgba(252,178,73,.44) 35%,
 
             var(--yellow) 50%,
 
-            rgba(255,190,50,.44) 65%,
+            rgba(252,178,73,.44) 65%,
 
-            rgba(255,190,50,.16) 92%,
+            rgba(252,178,73,.16) 92%,
 
             transparent 100%
         );
@@ -448,7 +448,7 @@ body.no-overlay .screenCorner{
     background:var(--yellow);
 
     box-shadow:
-        0 0 6px rgba(255,190,50,.25);
+        0 0 6px rgba(252,178,73,.25);
 
 }
 
@@ -560,7 +560,7 @@ body.no-overlay .screenCorner{
     font-weight:800;
 
     text-shadow:
-        0 0 10px rgba(255,190,50,.10);
+        0 0 10px rgba(252,178,73,.10);
 
 }
 
@@ -701,7 +701,7 @@ body.no-overlay .screenCorner{
     filter:
 
         drop-shadow(
-            0 0 8px rgba(255,190,50,.08)
+            0 0 8px rgba(252,178,73,.08)
         )
 
         drop-shadow(
@@ -785,9 +785,9 @@ body.no-overlay .screenCorner{
     width:100%;
     height:5px;
 
-    background:rgba(255,190,50,.10);
+    background:rgba(252,178,73,.10);
 
-    border:1px solid rgba(255,190,50,.24);
+    border:1px solid rgba(252,178,73,.24);
 
     overflow:hidden;
 
@@ -804,10 +804,10 @@ body.no-overlay .screenCorner{
 
     width:100%;
 
-    background:rgb(255,190,50);
+    background:rgb(252,178,73);
 
     box-shadow:
-        0 0 8px rgba(255,190,50,.30);
+        0 0 8px rgba(252,178,73,.30);
 
     transition:
         width .08s linear,
@@ -1033,7 +1033,7 @@ body.no-overlay .screenCorner{
 
     background:var(--yellow);
 
-    border-color:rgba(255,190,50,.66);
+    border-color:rgba(252,178,73,.66);
 
 }
 
@@ -1207,7 +1207,7 @@ body.no-overlay .screenCorner{
 
     gap:5px;
 
-    color:rgba(255,190,50,.55);
+    color:rgba(252,178,73,.55);
 
 }
 
@@ -1305,7 +1305,7 @@ body.no-overlay .screenCorner{
 
         linear-gradient(
             90deg,
-            rgba(255,190,50,.55),
+            rgba(252,178,73,.55),
             var(--yellow)
         );
 
@@ -1383,7 +1383,7 @@ body.no-overlay .screenCorner{
 
         linear-gradient(
             90deg,
-            rgba(255,190,50,.08),
+            rgba(252,178,73,.08),
             transparent
         );
 
@@ -1589,7 +1589,7 @@ body.no-overlay .screenCorner{
         linear-gradient(
             90deg,
             transparent,
-            rgba(255,190,50,.18) 40%,
+            rgba(252,178,73,.18) 40%,
             var(--yellow)
         );
 
@@ -1758,11 +1758,11 @@ body.no-overlay .screenCorner{
 
 .systemIcon.active{
 
-    border-color:rgba(255,190,50,.72);
+    border-color:rgba(252,178,73,.72);
 
     color:var(--yellow);
 
-    background:rgba(255,190,50,.06);
+    background:rgba(252,178,73,.06);
 
 }
 
@@ -1849,7 +1849,7 @@ body.no-overlay .screenCorner{
 
         linear-gradient(
             transparent,
-            rgba(255,190,50,.60),
+            rgba(252,178,73,.60),
             transparent
         );
 
@@ -2028,7 +2028,7 @@ body.no-overlay .screenCorner{
     -webkit-text-stroke:1px var(--white);
 
     text-shadow:
-        0 0 8px rgba(255,190,50,.45),
+        0 0 8px rgba(252,178,73,.45),
         0 1px 2px rgba(0,0,0,.85);
 
 }
@@ -2049,7 +2049,7 @@ body.no-overlay .screenCorner{
 
     background:var(--yellow);
 
-    box-shadow:0 0 6px rgba(255,190,50,.6);
+    box-shadow:0 0 6px rgba(252,178,73,.6);
 
 }
 
@@ -2161,7 +2161,7 @@ body.no-overlay .screenCorner{
     color:var(--yellow);
 
     text-shadow:
-        0 0 10px rgba(255,190,50,.45),
+        0 0 10px rgba(252,178,73,.45),
         0 1px 2px rgba(0,0,0,.9);
 
 }

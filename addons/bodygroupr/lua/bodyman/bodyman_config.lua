@@ -14,9 +14,9 @@ BODYMAN.Font = "Lato"
 
 -- Farben im Server-Design
 BODYMAN.Theme = {
-	Yellow      = Color(255, 190, 50),
+	Yellow      = Color(252, 178, 73),
 	YellowHover = Color(255, 207, 92),
-	YellowSoft  = Color(255, 190, 50, 105),
+	YellowSoft  = Color(252, 178, 73, 105),
 	White       = Color(244, 246, 248),
 	Text        = Color(215, 219, 225),
 	Muted       = Color(121, 128, 139),

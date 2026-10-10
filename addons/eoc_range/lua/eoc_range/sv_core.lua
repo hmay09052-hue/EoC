@@ -1118,7 +1118,7 @@ hook.Add("Initialize", "EoCRange_DB", function()
                     EoCRange.CheckTrophy(false)
                     EoCRange.Ready = true
                     EoCRange.SendInit()
-                    MsgC(Color(255, 190, 50), "[EoC Range] ", color_white, "Datenbank bereit (" .. (DB.IsMySQL() and "MySQL" or "SQLite") .. ").\n")
+                    MsgC(Color(252, 178, 73), "[EoC Range] ", color_white, "Datenbank bereit (" .. (DB.IsMySQL() and "MySQL" or "SQLite") .. ").\n")
                 end)
             end)
         end)

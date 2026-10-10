@@ -117,7 +117,7 @@ function EoCRange.DrawRingTarget(ent)
             for _, h in ipairs(holes) do
                 local a = HoleAlpha(h)
                 local x, y = h.u * R, -h.v * R
-                EoCRange.FillCircle(x, y, 5, Color(255, 190, 50, 255 * a), 12)
+                EoCRange.FillCircle(x, y, 5, Color(252, 178, 73, 255 * a), 12)
                 EoCRange.FillCircle(x, y, 3.2, Color(10, 10, 10, 255 * a), 12)
             end
         end
@@ -209,7 +209,7 @@ function EoCRange.DrawSilhouetteTarget(ent)
                 for _, h in ipairs(holes) do
                     local a = HoleAlpha(h)
                     local x, y = h.u * (s.w / 2) / scale, -h.v * s.h / scale
-                    EoCRange.FillCircle(x, y, 6, Color(255, 190, 50, 255 * a), 12)
+                    EoCRange.FillCircle(x, y, 6, Color(252, 178, 73, 255 * a), 12)
                     EoCRange.FillCircle(x, y, 3.5, Color(10, 10, 10, 255 * a), 12)
                 end
             cam.End3D2D()
@@ -244,7 +244,7 @@ function EoCRange.DrawSilhouetteTarget(ent)
             for _, h in ipairs(holes) do
                 local a = HoleAlpha(h)
                 local x, y = h.u * (s.w / 2) / scale, -h.v * s.h / scale
-                EoCRange.FillCircle(x, y, 5, Color(255, 190, 50, 255 * a), 12)
+                EoCRange.FillCircle(x, y, 5, Color(252, 178, 73, 255 * a), 12)
                 EoCRange.FillCircle(x, y, 3.2, Color(10, 10, 10, 255 * a), 12)
             end
         end
@@ -262,8 +262,8 @@ function EoCRange.DrawSilhouetteTarget(ent)
         local dir = ent:RailDir()
         local a = start + Vector(0, 0, 1)
         local b = a + dir * ent:GetTrack()
-        render.DrawLine(a, b, Color(255, 190, 50, 160), true)
-        render.DrawLine(a - ent:GetForward() * 3, b - ent:GetForward() * 3, Color(255, 190, 50, 90), true)
+        render.DrawLine(a, b, Color(252, 178, 73, 160), true)
+        render.DrawLine(a - ent:GetForward() * 3, b - ent:GetForward() * 3, Color(252, 178, 73, 90), true)
     end
 end
 
@@ -488,7 +488,7 @@ function EoCRange.DrawBoard(ent)
         draw.SimpleText(trophy ~= "" and trophy or "noch nicht vergeben", "EoCR_BoardMed", rx + 160, ty + 120, trophy ~= "" and HOLO or DIM, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
         -- Fußzeile
-        draw.SimpleText("ECHOES OF CLONES // SCHIESSSTAND", "EoCR_AurebeshBig", w / 2, h - 50, Color(255, 190, 50, 110), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("ECHOES OF CLONES // SCHIESSSTAND", "EoCR_AurebeshBig", w / 2, h - 50, Color(252, 178, 73, 110), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     cam.End3D2D()
 end
 

@@ -100,7 +100,7 @@ C.ReactionMinMs        = 120   -- schneller = verdächtig, wird markiert und ers
 -- Schützenabzeichen
 ---------------------------------------------------------------------------
 C.BadgeNames = { "Schütze", "Scharfschütze", "Meisterschütze" }
-C.BadgeColors = { Color(176, 141, 87), Color(190, 200, 214), Color(255, 190, 50) }
+C.BadgeColors = { Color(176, 141, 87), Color(190, 200, 214), Color(252, 178, 73) }
 
 -- Disziplinen der Prüfung. Für eine Stufe müssen ALLE in derselben Prüfung erreicht werden.
 C.ExamDisciplines = { "precision_25", "precision_50", "timed", "rapid" }
@@ -177,7 +177,7 @@ C.HoloDistance       = 700
 C.HoloDetailDistance = 380
 C.BoardDistance      = 2000
 C.ChatPrefix         = "[EoC] "
-C.ChatPrefixColor    = Color(255, 170, 0)   -- wie der EoC-Announcer
+C.ChatPrefixColor    = Color(252, 178, 73)   -- wie der EoC-Announcer
 
 C.Sounds = {
     countdown = "buttons/blip1.wav",

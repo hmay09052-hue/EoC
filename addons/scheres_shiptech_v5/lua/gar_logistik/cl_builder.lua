@@ -182,7 +182,7 @@ hook.Add("PlayerBindPress", "GARLog_Ghost", function(_, bind, pressed)
 end)
 
 local ringMat = Material("trails/laser")
-local ringCol = Color(255, 190, 50, 160)
+local ringCol = Color(252, 178, 73, 160)
 local RING_SEG = 48
 
 local function DrawRing(center, radius)

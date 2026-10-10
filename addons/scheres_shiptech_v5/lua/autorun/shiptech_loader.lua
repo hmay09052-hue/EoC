@@ -46,5 +46,5 @@ Client("shiptech/cl_event.lua")
 Client("shiptech/cl_features.lua")
 
 if SERVER then
-    MsgC(Color(80, 190, 255), "[ShipTech] ", color_white, "Schiffstechnik v" .. ShipTech.Version .. " geladen.\n")
+    MsgC(Color(252, 178, 73), "[ShipTech] ", color_white, "Schiffstechnik v" .. ShipTech.Version .. " geladen.\n")
 end

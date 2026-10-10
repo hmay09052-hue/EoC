@@ -221,17 +221,22 @@ function UI.PaintButton(panel, w, h, style, accent)
 end
 
 -- Ersatz für draw.RoundedBox / RoundedBoxEx: abgeschrägte statt runder Ecken (Kreise bleiben rund)
+-- Die Original-Funktionen werden einmal gemerkt, weil draw.RoundedBox unten serverweit ersetzt wird.
+UI._origRoundedBox = UI._origRoundedBox or draw.RoundedBox
+UI._origRoundedBoxEx = UI._origRoundedBoxEx or draw.RoundedBoxEx
+local origRB, origRBEx = UI._origRoundedBox, UI._origRoundedBoxEx
+
 function UI.RoundedBox(r, x, y, w, h, col)
     if w <= 0 or h <= 0 then return end
     if r <= 0 then UI.Box(x, y, w, h, col) return end
-    if r * 2 >= math.min(w, h) then return draw.RoundedBox(r, x, y, w, h, col) end
+    if r * 2 >= math.min(w, h) then return origRB(r, x, y, w, h, col) end
     UI.Cut(x, y, w, h, col, math.floor(math.min(r, w / 3, h / 3)), "tlbr")
 end
 
 function UI.RoundedBoxEx(r, x, y, w, h, col, tl, tr, bl, br)
     if w <= 0 or h <= 0 then return end
     if r <= 0 or not (tl or tr or bl or br) then UI.Box(x, y, w, h, col) return end
-    if r * 2 >= math.min(w, h) then return draw.RoundedBoxEx(r, x, y, w, h, col, tl, tr, bl, br) end
+    if r * 2 >= math.min(w, h) then return origRBEx(r, x, y, w, h, col, tl, tr, bl, br) end
     -- Ecken wie bei SymChars nur oben links / unten rechts abschrägen
     local corners = (tl and "tl" or "") .. (br and "br" or "")
     if corners == "" then corners = (tr and "tr" or "") .. (bl and "bl" or "") end
@@ -1036,6 +1041,26 @@ function SKIN:PaintSelectedPanel(panel, w, h)
 end
 
 derma.DefineSkin("SymChars", "Design des SymChars-Charaktermenüs", SKIN)
+
+---------------------------------------------------------------------------------------------------------------
+-- Serverweit kantig: draw.RoundedBox / RoundedBoxEx aller Addons zeichnen abgeschrägte statt runder Ecken.
+-- Kreise (Radius >= halbe Kante) bleiben rund. Abschalten: symchars_ui_sharp 0
+---------------------------------------------------------------------------------------------------------------
+local sharp = CreateClientConVar("symchars_ui_sharp", "1", true, false, "Kantiges Server-Design für alle draw.RoundedBox-Aufrufe")
+
+draw.RoundedBox = function(r, x, y, w, h, col, ...)
+    if sharp:GetBool() and isnumber(r) and isnumber(x) and isnumber(y) and isnumber(w) and isnumber(h) and col then
+        return UI.RoundedBox(r, x, y, w, h, col)
+    end
+    return origRB(r, x, y, w, h, col, ...)
+end
+
+draw.RoundedBoxEx = function(r, x, y, w, h, col, tl, tr, bl, br, ...)
+    if sharp:GetBool() and isnumber(r) and isnumber(x) and isnumber(y) and isnumber(w) and isnumber(h) and col then
+        return UI.RoundedBoxEx(r, x, y, w, h, col, tl, tr, bl, br)
+    end
+    return origRBEx(r, x, y, w, h, col, tl, tr, bl, br, ...)
+end
 
 function UI.Skin(panel)
     if IsValid(panel) then panel:SetSkin("SymChars") end

@@ -111,7 +111,9 @@ if CLIENT then
 			PNL:SetVisible( true )
 			PNL:SetDraggable( true )
 			PNL:ShowCloseButton( true )
+			PNL:SetTitle( "Thirdperson" )
 			PNL:MakePopup()
+			if SYMUI then SYMUI.AutoStyle( PNL ) end -- Server-Design (SymChars)
 		end
 
 		Editor.PANEL = PNL
@@ -145,10 +147,10 @@ if CLIENT then
 		
 		if Editor.EnableToggle then
 			Editor.PANEL.EnableThrd:SetText("Disable ThirdPerson")
-			Editor.PANEL.EnableThrd:SetTextColor(Color(150,0,0))
+			Editor.PANEL.EnableThrd:SetTextColor(Color(205,62,56))
 		else
 			Editor.PANEL.EnableThrd:SetText("Enable ThirdPerson")
-			Editor.PANEL.EnableThrd:SetTextColor(Color(0,150,0))
+			Editor.PANEL.EnableThrd:SetTextColor(Color(95,200,120))
 		end
 		
 		Editor.PANEL.EnableThrd:SetPos(10,6)
@@ -160,10 +162,10 @@ if CLIENT then
 			
 			if Editor.EnableToggle then
 				Editor.PANEL.EnableThrd:SetText("Disable ThirdPerson")
-				Editor.PANEL.EnableThrd:SetTextColor(Color(150,0,0))
+				Editor.PANEL.EnableThrd:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.EnableThrd:SetText("Enable ThirdPerson")
-				Editor.PANEL.EnableThrd:SetTextColor(Color(0,150,0))
+				Editor.PANEL.EnableThrd:SetTextColor(Color(95,200,120))
 			end
 					
 		end
@@ -184,7 +186,7 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_cam_up",0)
 			RunConsoleCommand("simple_thirdperson_cam_yaw",0)
 			RunConsoleCommand("simple_thirdperson_cam_pitch",0)
-			chat.AddText(Color(255,255,255),"[",Color(255,155,0),"Simple ThirdPerson",Color(255,255,255),"] Camera Reset !")
+			chat.AddText(Color(255,255,255),"[",Color(252,178,73),"Simple ThirdPerson",Color(255,255,255),"] Camera Reset !")
 			Editor.PANEL:Close()
 		end
 		
@@ -197,7 +199,7 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_shoulderview_dist",50)
 			RunConsoleCommand("simple_thirdperson_shoulderview_up",0)
 			RunConsoleCommand("simple_thirdperson_shoulderview_right",40)
-			chat.AddText(Color(255,255,255),"[",Color(255,155,0),"Simple ThirdPerson",Color(255,255,255),"] ShoulderView Reset !")
+			chat.AddText(Color(255,255,255),"[",Color(252,178,73),"Simple ThirdPerson",Color(255,255,255),"] ShoulderView Reset !")
 			Editor.PANEL:Close()
 		end
 		
@@ -212,7 +214,7 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_smooth_mult_y",0.3)
 			RunConsoleCommand("simple_thirdperson_smooth_mult_z",0.3)
 			RunConsoleCommand("simple_thirdperson_smooth_delay",10)
-			chat.AddText(Color(255,255,255),"[",Color(255,155,0),"Simple ThirdPerson",Color(255,255,255),"] Smooth Reset !")
+			chat.AddText(Color(255,255,255),"[",Color(252,178,73),"Simple ThirdPerson",Color(255,255,255),"] Smooth Reset !")
 			Editor.PANEL:Close()
 		end
 		
@@ -224,7 +226,7 @@ if CLIENT then
 		Editor.PANEL.ResetFOV.DoClick = function()
 			RunConsoleCommand("simple_thirdperson_fov_smooth",1)
 			RunConsoleCommand("simple_thirdperson_fov_smooth_mult",0.3)
-			chat.AddText(Color(255,255,255),"[",Color(255,155,0),"Simple ThirdPerson",Color(255,255,255),"] FOV Reset !")
+			chat.AddText(Color(255,255,255),"[",Color(252,178,73),"Simple ThirdPerson",Color(255,255,255),"] FOV Reset !")
 			Editor.PANEL:Close()
 		end
 		
@@ -236,10 +238,10 @@ if CLIENT then
 		
 			if Editor.CollisionToggle then
 				Editor.PANEL.CollisionButton:SetText("Disable Camera Collision")
-				Editor.PANEL.CollisionButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.CollisionButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.CollisionButton:SetText("Enable Camera Collision")
-				Editor.PANEL.CollisionButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.CollisionButton:SetTextColor(Color(95,200,120))
 			end
 			
 		Editor.PANEL.CollisionButton:SetText("Toggle Camera Collision")
@@ -252,10 +254,10 @@ if CLIENT then
 			
 			if Editor.CollisionToggle then
 				Editor.PANEL.CollisionButton:SetText("Disable Camera Collision")
-				Editor.PANEL.CollisionButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.CollisionButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.CollisionButton:SetText("Enable Camera Collision")
-				Editor.PANEL.CollisionButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.CollisionButton:SetTextColor(Color(95,200,120))
 			end
 								
 		end
@@ -400,10 +402,10 @@ if CLIENT then
 		
 		if Editor.SmoothToggle then
 			Editor.PANEL.SmoothButton:SetText("Disable Camera Smoothing")
-			Editor.PANEL.SmoothButton:SetTextColor(Color(150,0,0))
+			Editor.PANEL.SmoothButton:SetTextColor(Color(205,62,56))
 		else
 			Editor.PANEL.SmoothButton:SetText("Enable Camera Smoothing")
-			Editor.PANEL.SmoothButton:SetTextColor(Color(0,150,0))
+			Editor.PANEL.SmoothButton:SetTextColor(Color(95,200,120))
 		end
 
 		Editor.PANEL.SmoothButton:SetPos(10,6)
@@ -414,10 +416,10 @@ if CLIENT then
 
 			if Editor.SmoothToggle then
 				Editor.PANEL.SmoothButton:SetText("Disable Camera Smoothing")
-				Editor.PANEL.SmoothButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.SmoothButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.SmoothButton:SetText("Enable Camera Smoothing")
-				Editor.PANEL.SmoothButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.SmoothButton:SetTextColor(Color(95,200,120))
 			end					
 		end
 		
@@ -426,10 +428,10 @@ if CLIENT then
 		
 		if Editor.FOVToggle then
 			Editor.PANEL.SmoothFOVButton:SetText("Disable FOV Smoothing")
-			Editor.PANEL.SmoothFOVButton:SetTextColor(Color(150,0,0))
+			Editor.PANEL.SmoothFOVButton:SetTextColor(Color(205,62,56))
 		else
 			Editor.PANEL.SmoothFOVButton:SetText("Enable FOV Smoothing")
-			Editor.PANEL.SmoothFOVButton:SetTextColor(Color(0,150,0))
+			Editor.PANEL.SmoothFOVButton:SetTextColor(Color(95,200,120))
 		end
 		
 		Editor.PANEL.SmoothFOVButton:SetPos(10,30)
@@ -440,10 +442,10 @@ if CLIENT then
 
 			if Editor.FOVToggle then
 				Editor.PANEL.SmoothFOVButton:SetText("Disable FOV Smoothing")
-				Editor.PANEL.SmoothFOVButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.SmoothFOVButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.SmoothFOVButton:SetText("Enable FOV Smoothing")
-				Editor.PANEL.SmoothFOVButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.SmoothFOVButton:SetTextColor(Color(95,200,120))
 			end					
 		end
 		
@@ -560,10 +562,10 @@ if CLIENT then
 		
 		if Editor.ShoulderToggle then
 				Editor.PANEL.ShoulderButton:SetText("Disable ShoulderView")
-				Editor.PANEL.ShoulderButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.ShoulderButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.ShoulderButton:SetText("Enable ShoulderView")
-				Editor.PANEL.ShoulderButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.ShoulderButton:SetTextColor(Color(95,200,120))
 		end		
 		
 		Editor.PANEL.ShoulderButton:SetPos(10,6)
@@ -573,10 +575,10 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_shoulderview",BoolToInt(Editor.ShoulderToggle))
 			if Editor.ShoulderToggle then
 				Editor.PANEL.ShoulderButton:SetText("Disable ShoulderView")
-				Editor.PANEL.ShoulderButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.ShoulderButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.ShoulderButton:SetText("Enable ShoulderView")
-				Editor.PANEL.ShoulderButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.ShoulderButton:SetTextColor(Color(95,200,120))
 			end						
 		end
 		
@@ -585,10 +587,10 @@ if CLIENT then
 		
 		if Editor.ShoulderBumpToggle then
 				Editor.PANEL.ShoulderBumpButton:SetText("Disable ShoulderView Bump")
-				Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(205,62,56))
 		else
 				Editor.PANEL.ShoulderBumpButton:SetText("Enable ShoulderView Bump")
-				Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(95,200,120))
 		end	
 		
 		Editor.PANEL.ShoulderBumpButton:SetPos(10,30)
@@ -598,10 +600,10 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_shoulderview_bump",BoolToInt(Editor.ShoulderBumpToggle))	
 			if Editor.ShoulderBumpToggle then
 					Editor.PANEL.ShoulderBumpButton:SetText("Disable ShoulderView Bump")
-					Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(150,0,0))
+					Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(205,62,56))
 			else
 					Editor.PANEL.ShoulderBumpButton:SetText("Enable ShoulderView Bump")
-					Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(0,150,0))
+					Editor.PANEL.ShoulderBumpButton:SetTextColor(Color(95,200,120))
 			end						
 		end
 		
@@ -693,10 +695,10 @@ if CLIENT then
 		
 		if Editor.CustomCrossToggle then
 				Editor.PANEL.CustomCrossButton:SetText("Disable Custom Crosshair")
-				Editor.PANEL.CustomCrossButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.CustomCrossButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.CustomCrossButton:SetText("Enable Custom Crosshair")
-				Editor.PANEL.CustomCrossButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.CustomCrossButton:SetTextColor(Color(95,200,120))
 		end		
 		
 		Editor.PANEL.CustomCrossButton:SetPos(10,6)
@@ -706,10 +708,10 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_enable_custom_crosshair",BoolToInt(Editor.CustomCrossToggle))
 			if Editor.CustomCrossToggle then
 				Editor.PANEL.CustomCrossButton:SetText("Disable Custom Crosshair")
-				Editor.PANEL.CustomCrossButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.CustomCrossButton:SetTextColor(Color(205,62,56))
 			else
 				Editor.PANEL.CustomCrossButton:SetText("Enable Custom Crosshair")
-				Editor.PANEL.CustomCrossButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.CustomCrossButton:SetTextColor(Color(95,200,120))
 			end						
 		end
 		
@@ -718,10 +720,10 @@ if CLIENT then
 		
 		if Editor.CrossToggle then
 				Editor.PANEL.CrossButton:SetText("Hide Default Crosshair")
-				Editor.PANEL.CrossButton:SetTextColor(Color(150,0,0))
+				Editor.PANEL.CrossButton:SetTextColor(Color(205,62,56))
 		else
 				Editor.PANEL.CrossButton:SetText("Show Default Crosshair")
-				Editor.PANEL.CrossButton:SetTextColor(Color(0,150,0))
+				Editor.PANEL.CrossButton:SetTextColor(Color(95,200,120))
 		end	
 		
 		Editor.PANEL.CrossButton:SetPos(10,30)
@@ -731,10 +733,10 @@ if CLIENT then
 			RunConsoleCommand("simple_thirdperson_hide_crosshair",BoolToInt(Editor.CrossToggle))	
 			if Editor.CrossToggle then
 					Editor.PANEL.CrossButton:SetText("Hide Default Crosshair")
-					Editor.PANEL.CrossButton:SetTextColor(Color(150,0,0))
+					Editor.PANEL.CrossButton:SetTextColor(Color(205,62,56))
 			else
 					Editor.PANEL.CrossButton:SetText("Show Default Crosshair")
-					Editor.PANEL.CrossButton:SetTextColor(Color(0,150,0))
+					Editor.PANEL.CrossButton:SetTextColor(Color(95,200,120))
 			end						
 		end
 		

@@ -306,7 +306,7 @@ local function createMenu()
     end
 
     local html = GRNWeaponrio.GetHTML()
-    UI.HTML:SetHTML(SYMUI and SYMUI.ThemeHTML(html, { yellows = { "255,190,50", "115,165,237", "77,128,202" }, hexes = { "#73a5ed", "#ffbe32" } }) or html)
+    UI.HTML:SetHTML(SYMUI and SYMUI.ThemeHTML(html, { yellows = { "252,178,73", "115,165,237", "77,128,202" }, hexes = { "#73a5ed", "#fcb249" } }) or html)
 
     UI.ModelPanel = vgui.Create("DModelPanel", UI.Frame)
     UI.ModelPanel:SetZPos(8)

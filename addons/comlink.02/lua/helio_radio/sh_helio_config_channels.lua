@@ -169,7 +169,7 @@ hradio.AddChannel({
     GetTalkers = function(ply) return false end,
     GetListeners = function(ply) return IsRepublic(ply) end, -- Alle Republik-Jobs hören zu
     Mutable = false,
-    Colour = Color(255, 190, 50)
+    Colour = Color(252, 178, 73)
 })
 
 hradio.AddChannel({

@@ -13,7 +13,7 @@ ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.RangeKind = "zone"
 ENT.IsRangeZone = true
-ENT.ZoneColor = Color(255, 190, 50)
+ENT.ZoneColor = Color(252, 178, 73)
 ENT.DefaultSize = Vector(160, 240, 110)
 
 function ENT:SetupRangeVars()

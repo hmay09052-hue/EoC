@@ -327,7 +327,7 @@ end
 
 local function InitTheme()
     KF.Fonts.Create(AID)
-    local ac = KrakenSquad.GetConfig("colors").accent or { 255, 190, 50 }
+    local ac = KrakenSquad.GetConfig("colors").accent or { 252, 178, 73 }
     KF.UI.ApplyAccentColor(AID, Color(ac[1], ac[2], ac[3]))
 end
 

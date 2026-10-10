@@ -573,7 +573,7 @@ local function OpenPoseTool()
     if IsValid(toolFrame) then toolFrame:Remove() end
     local lp = LocalPlayer()
     if States[lp] then
-        chat.AddText(Color(255, 190, 50), "[Sport] ", color_white, "Erst die laufende Übung beenden.")
+        chat.AddText(Color(252, 178, 73), "[Sport] ", color_white, "Erst die laufende Übung beenden.")
         return
     end
 
@@ -740,7 +740,7 @@ local function OpenPoseTool()
     copy:SetText("Als Lua kopieren")
     copy.DoClick = function()
         SetClipboardText(PoseToLua(EoCSport.Preview.pose, pose()))
-        chat.AddText(Color(255, 190, 50), "[Sport] ", color_white, "Pose in der Zwischenablage. In cl_poses.lua einfügen.")
+        chat.AddText(Color(252, 178, 73), "[Sport] ", color_white, "Pose in der Zwischenablage. In cl_poses.lua einfügen.")
     end
 
     refresh()
@@ -748,7 +748,7 @@ end
 
 concommand.Add("eoc_sport_posetool", function()
     if not EoCSport.IsAdmin(LocalPlayer()) then
-        chat.AddText(Color(255, 190, 50), "[Sport] ", color_white, "Nur für Admins.")
+        chat.AddText(Color(252, 178, 73), "[Sport] ", color_white, "Nur für Admins.")
         return
     end
     OpenPoseTool()

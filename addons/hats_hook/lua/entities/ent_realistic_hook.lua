@@ -224,6 +224,10 @@ end
 local ChargeBarCol = { White = Color(255,255,255), DefCol1 = Color(255,50,50), DefCol2 = Color(50,255,50) }
 local Gradient = Material( "gui/gradient" )
 local function DrawChargeBar( xpos, ypos, width, height, charge, col1, col2 )
+	if SYMUI then -- Server-Design (SymChars)
+		SYMUI.Bar( xpos, ypos, width, height, math.Clamp( charge or 50, 0, 100 ) / 100, SYMUI.Accent() )
+		return
+	end
 	draw.NoTexture()
 	
 	surface.SetDrawColor( ChargeBarCol.White )
@@ -243,16 +247,29 @@ local function DrawChargeBar( xpos, ypos, width, height, charge, col1, col2 )
 	draw.NoTexture()
 end
 local function ShadowText( txt, x, y, col )
-	draw.DrawText( txt, "Default", x+1, y+1, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP )
-	draw.DrawText( txt, "Default", x, y, col or Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP )
+	local font = SYMUI and "symchars.small.bold" or "Default"
+	draw.DrawText( txt, font, x+1, y+1, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP )
+	draw.DrawText( txt, font, x, y, col or Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP )
 end
 function ENT:HUDPaint()
 	if not (LocalPlayer()==self:GetTargetEnt()) then return end
 	
-	ShadowText( "Rope length: "..tostring(self:GetDist()), ScrW()/2, ScrH()/2-60 )
-	ShadowText( "You have been hooked!", ScrW()/2, ScrH()/2-75, Color(255,100,100) )
-	ShadowText( (input.LookupBinding("+use") or "[USE]"):upper() .. " - Break free", ScrW()/2, ScrH()/2-40 )
-	DrawChargeBar( (ScrW()/2)-70, (ScrH()/2)-20, 140, 15, self:GetDurability() )
+	local cx, cy = ScrW()/2, ScrH()/2
+	if SYMUI then -- Server-Design (SymChars): Platte mit Akzentkante und Leiste
+		local S = SYMUI.S
+		local w, h = S(260), S(96)
+		local x, y = cx - w/2, cy - S(110)
+		SYMUI.HudPanel( x, y, w, h, { accent = SYMUI.col.red } )
+		SYMUI.Text( "DU WURDEST ANGEHAKT!", "symchars.h4", cx, y + S(8), SYMUI.col.red, TEXT_ALIGN_CENTER )
+		SYMUI.Text( "Seillänge: " .. tostring(self:GetDist()), "symchars.small", cx, y + S(34), SYMUI.col.dim, TEXT_ALIGN_CENTER )
+		SYMUI.Text( (input.LookupBinding("+use") or "E"):upper() .. " drücken zum Befreien", "symchars.small.bold", cx, y + S(52), SYMUI.col.text, TEXT_ALIGN_CENTER )
+		SYMUI.Bar( x + S(14), y + h - S(20), w - S(28), S(8), self:GetDurability() / 100, SYMUI.Accent() )
+		return
+	end
+	ShadowText( "Seillänge: "..tostring(self:GetDist()), cx, cy-60 )
+	ShadowText( "Du wurdest angehakt!", cx, cy-75, Color(255,100,100) )
+	ShadowText( (input.LookupBinding("+use") or "[USE]"):upper() .. " - Befreien", cx, cy-40 )
+	DrawChargeBar( cx-70, cy-20, 140, 15, self:GetDurability() )
 end
 
 if SERVER then

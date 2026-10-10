@@ -78,7 +78,7 @@ function gWare.Utils.Print(str, type)
     if type == "error" then
         color = Color(255, 23, 23)
     elseif type == "warning" then
-        color = Color(255, 182, 23)
+        color = Color(252, 178, 73)
     end
 
     MsgC(color, "gWare Utilities ", Color(255, 255, 255), "» ", Color(255, 255, 255), str, "\n")

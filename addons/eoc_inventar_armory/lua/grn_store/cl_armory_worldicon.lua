@@ -22,7 +22,7 @@ local function ensurePanel()
     pnl:SetHTML([[<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
 body{display:flex;align-items:center;justify-content:center}
-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 15px rgba(255,190,50,.42))}
+img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 15px rgba(252,178,73,.42))}
 </style></head><body><img src="]] .. url .. [["></body></html>]])
 
     S.ArmoryWorldIconPanel = pnl

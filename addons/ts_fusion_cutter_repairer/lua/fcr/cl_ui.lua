@@ -20,10 +20,10 @@ local PANEL_HTML_TEMPLATE = [====[<!DOCTYPE html>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --yellow: rgb(255, 190, 50);
-            --yellow-soft: rgba(255, 190, 50, .68);
-            --yellow-dim: rgba(255, 190, 50, .22);
-            --yellow-faint: rgba(255, 190, 50, .08);
+            --yellow: rgb(252, 178, 73);
+            --yellow-soft: rgba(252, 178, 73, .68);
+            --yellow-dim: rgba(252, 178, 73, .22);
+            --yellow-faint: rgba(252, 178, 73, .08);
 
             --white: #f4f1e9;
             --text: #d8dbe1;
@@ -361,7 +361,7 @@ local PANEL_HTML_TEMPLATE = [====[<!DOCTYPE html>
            BUTTON
            ========================================= */
         .action-button {
-            background: rgba(255, 190, 50, .84);
+            background: rgba(252, 178, 73, .84);
             color: #07090c;
             border: 1px solid var(--yellow);
             padding: 9px 16px 7px;
@@ -379,7 +379,7 @@ local PANEL_HTML_TEMPLATE = [====[<!DOCTYPE html>
         }
 
         .action-button:hover { background: var(--yellow); }
-        .action-button:active { background: rgba(255, 190, 50, .70); }
+        .action-button:active { background: rgba(252, 178, 73, .70); }
 
         /* =========================================
            BENACHRICHTIGUNGEN
@@ -401,8 +401,8 @@ local PANEL_HTML_TEMPLATE = [====[<!DOCTYPE html>
         .notice.success { border-left-color: var(--green); } .notice.success svg { color: var(--green); }
         .notice.info { border-left-color: var(--cyan); } .notice.info svg { color: var(--cyan); }
 
-        .pulse { display: inline-block; width: 7px; height: 7px; background: var(--yellow); margin-right: 9px; box-shadow: 0 0 0 0 rgba(255,190,50,0.35); animation: pulse 1.55s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,190,50,0.45); } 70% { box-shadow: 0 0 0 7px rgba(255,190,50,0); } 100% { box-shadow: 0 0 0 0 rgba(255,190,50,0); } }
+        .pulse { display: inline-block; width: 7px; height: 7px; background: var(--yellow); margin-right: 9px; box-shadow: 0 0 0 0 rgba(252,178,73,0.35); animation: pulse 1.55s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(252,178,73,0.45); } 70% { box-shadow: 0 0 0 7px rgba(252,178,73,0); } 100% { box-shadow: 0 0 0 0 rgba(252,178,73,0); } }
 </style>
 </head>
 <body>
@@ -763,7 +763,7 @@ function drawGrid(view, colorA, colorB) {
 function drawPhase1(t, view) {
   const data = state.phaseData || { points:[] };
   const points = data.points || [];
-  drawGrid(view, 'rgba(255,190,50,0.06)', 'rgba(255,255,255,0.04)');
+  drawGrid(view, 'rgba(252,178,73,0.06)', 'rgba(255,255,255,0.04)');
   if (points.length < 2) return;
 
   const progress = Math.max(1, state.p1Progress || 1);
@@ -772,8 +772,8 @@ function drawPhase1(t, view) {
   ctx.lineJoin = 'round';
 
   ctx.shadowBlur = 22;
-  ctx.shadowColor = 'rgba(255,190,50,0.22)';
-  ctx.strokeStyle = 'rgba(255,190,50,0.20)';
+  ctx.shadowColor = 'rgba(252,178,73,0.22)';
+  ctx.strokeStyle = 'rgba(252,178,73,0.20)';
   ctx.lineWidth = Math.max(22, data.maxDeviation * view.scale * 1.08);
   ctx.beginPath();
   points.forEach((pt, i) => { const p = phaseToCanvas(pt.x, pt.y); if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
@@ -788,8 +788,8 @@ function drawPhase1(t, view) {
   ctx.stroke();
 
   ctx.shadowBlur = 18;
-  ctx.shadowColor = 'rgba(255,190,50,0.48)';
-  ctx.strokeStyle = 'rgba(255,190,50,0.95)';
+  ctx.shadowColor = 'rgba(252,178,73,0.48)';
+  ctx.strokeStyle = 'rgba(252,178,73,0.95)';
   ctx.lineWidth = 4;
   ctx.beginPath();
   points.forEach((pt, i) => { const p = phaseToCanvas(pt.x, pt.y); if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
@@ -801,8 +801,8 @@ function drawPhase1(t, view) {
     const active = i === progress;
     const r = active ? 11 + Math.sin(t * 0.006) * 1.7 : 8;
     ctx.shadowBlur = active ? 18 : 10;
-    ctx.shadowColor = active ? 'rgba(74,203,130,0.55)' : done ? 'rgba(255,190,50,0.45)' : 'rgba(255,255,255,0.12)';
-    ctx.fillStyle = done ? 'rgba(74,203,130,0.95)' : active ? 'rgba(244,241,233,0.95)' : 'rgba(255,190,50,0.82)';
+    ctx.shadowColor = active ? 'rgba(74,203,130,0.55)' : done ? 'rgba(252,178,73,0.45)' : 'rgba(255,255,255,0.12)';
+    ctx.fillStyle = done ? 'rgba(74,203,130,0.95)' : active ? 'rgba(244,241,233,0.95)' : 'rgba(252,178,73,0.82)';
     ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
     ctx.lineWidth = 2;
     ctx.strokeStyle = done ? 'rgba(255,255,255,0.20)' : 'rgba(255,255,255,0.08)';
@@ -812,7 +812,7 @@ function drawPhase1(t, view) {
   if (state.mouse.inside) {
     const mp = phaseToCanvas(state.mouse.x, state.mouse.y);
     ctx.shadowBlur = 14;
-    ctx.shadowColor = state.holdPhase1 ? 'rgba(255,190,50,0.55)' : 'rgba(80,200,220,0.25)';
+    ctx.shadowColor = state.holdPhase1 ? 'rgba(252,178,73,0.55)' : 'rgba(80,200,220,0.25)';
     ctx.strokeStyle = state.holdPhase1 ? 'rgba(244,241,233,0.95)' : 'rgba(80,200,220,0.72)';
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(mp.x, mp.y, 10 + Math.sin(t * 0.015) * 1.5, 0, Math.PI * 2); ctx.stroke();
@@ -860,11 +860,11 @@ function drawPhase2(t, view) {
     } else if (decoy) {
       fill = 'rgba(80,200,220,0.14)';
       stroke = 'rgba(80,200,220,0.96)';
-      glow = hover ? 'rgba(255,190,50,0.46)' : 'rgba(80,200,220,0.42)';
+      glow = hover ? 'rgba(252,178,73,0.46)' : 'rgba(80,200,220,0.42)';
     } else if (showTrueGuide) {
-      fill = 'rgba(255,190,50,0.16)';
-      stroke = 'rgba(255,190,50,0.95)';
-      glow = hover ? 'rgba(80,200,220,0.44)' : 'rgba(255,190,50,0.38)';
+      fill = 'rgba(252,178,73,0.16)';
+      stroke = 'rgba(252,178,73,0.95)';
+      glow = hover ? 'rgba(80,200,220,0.44)' : 'rgba(252,178,73,0.38)';
     } else if (hover) {
       fill = 'rgba(80,200,220,0.10)';
       stroke = 'rgba(80,200,220,0.82)';
@@ -914,8 +914,8 @@ function drawPhase3(t, view) {
     const p = phaseToCanvas(pt.x, pt.y);
     if (n < idx) {
       ctx.shadowBlur = 12;
-      ctx.shadowColor = 'rgba(255,190,50,0.38)';
-      ctx.fillStyle = 'rgba(255,190,50,0.40)';
+      ctx.shadowColor = 'rgba(252,178,73,0.38)';
+      ctx.fillStyle = 'rgba(252,178,73,0.40)';
       ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = 'rgba(244,241,233,0.35)';
       ctx.lineWidth = 2; ctx.stroke();
@@ -927,12 +927,12 @@ function drawPhase3(t, view) {
     const shrink = Math.max(base * 0.38, base * frac);
     const urgency = 1 - frac;
     ctx.shadowBlur = 24 + urgency * 18;
-    ctx.shadowColor = frac > 0.35 ? 'rgba(255,190,50,0.55)' : 'rgba(225,88,88,0.60)';
-    ctx.fillStyle = frac > 0.35 ? 'rgba(255,190,50,0.20)' : 'rgba(225,88,88,0.22)';
+    ctx.shadowColor = frac > 0.35 ? 'rgba(252,178,73,0.55)' : 'rgba(225,88,88,0.60)';
+    ctx.fillStyle = frac > 0.35 ? 'rgba(252,178,73,0.20)' : 'rgba(225,88,88,0.22)';
     ctx.beginPath(); ctx.arc(p.x, p.y, base, 0, Math.PI * 2); ctx.fill();
 
     ctx.lineWidth = 3;
-    ctx.strokeStyle = frac > 0.35 ? 'rgba(255,190,50,0.95)' : 'rgba(225,88,88,0.95)';
+    ctx.strokeStyle = frac > 0.35 ? 'rgba(252,178,73,0.95)' : 'rgba(225,88,88,0.95)';
     ctx.beginPath(); ctx.arc(p.x, p.y, shrink, 0, Math.PI * 2); ctx.stroke();
 
     ctx.shadowBlur = 14;

@@ -40,7 +40,7 @@ local function WrapCryptoRadio()
         return oldAntenna(...)
     end
 
-    MsgC(Color(255, 190, 50), "[ShipTech] ", color_white, "Funksystem (crypto_radio) gekoppelt.\n")
+    MsgC(Color(252, 178, 73), "[ShipTech] ", color_white, "Funksystem (crypto_radio) gekoppelt.\n")
 end
 
 hook.Add("InitPostEntity", "ShipTech_CryptoRadio", WrapCryptoRadio)

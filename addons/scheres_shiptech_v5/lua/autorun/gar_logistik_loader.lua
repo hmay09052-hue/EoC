@@ -19,7 +19,7 @@ local SERVER_FILES = {
 }
 
 local CLIENT_FILES = {
-    "gar_logistik/cl_eocui.lua",
+    "shiptech/cl_eocui.lua", -- gemeinsames Design (eine Kopie für ShipTech, Logistik und EVA)
     "gar_logistik/cl_ui.lua",
     "gar_logistik/cl_core.lua",
     "gar_logistik/cl_world.lua",
@@ -37,4 +37,4 @@ else
     for _, f in ipairs(CLIENT_FILES) do include(f) end
 end
 
-MsgC(Color(255, 190, 50), "[GAR Logistik] ", color_white, "v" .. GARLog.Version .. " geladen.\n")
+MsgC(Color(252, 178, 73), "[GAR Logistik] ", color_white, "v" .. GARLog.Version .. " geladen.\n")
