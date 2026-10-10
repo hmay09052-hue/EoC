@@ -638,7 +638,7 @@ local function BuildIcons(scroll)
                 BattleGrid:CreateIconButton(row, "×", BattleGrid.C("Error"), function()
                     table.remove(customIcons, idx)
                     SetCfg("custom_icons", util.TableToJSON(customIcons))
-                    BattleGrid:SyncCustomIcons()
+                    if BattleGrid.SyncCustomIcons then BattleGrid:SyncCustomIcons() end -- Funktion fehlt in v1.2.1, Icons kommen direkt aus der Config
                     RebuildCustomIconList()
                 end)
             end
@@ -662,7 +662,7 @@ local function BuildIcons(scroll)
         end
         table.insert(customIcons, path)
         SetCfg("custom_icons", util.TableToJSON(customIcons))
-        BattleGrid:SyncCustomIcons()
+        if BattleGrid.SyncCustomIcons then BattleGrid:SyncCustomIcons() end -- Funktion fehlt in v1.2.1, Icons kommen direkt aus der Config
         iconPathInput:SetValue("")
         RebuildCustomIconList()
     end, 32, {6, 6})

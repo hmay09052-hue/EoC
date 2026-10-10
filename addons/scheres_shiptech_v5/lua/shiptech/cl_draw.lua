@@ -403,8 +403,8 @@ local RT_SIZE, RT_R = 1024, 400
 local shieldRT, shieldMat
 local rtWanted, rtLast = 0, 0
 
-surface.CreateFont("ShipTech_RTBig", { font = "Bebas Neue", size = 190, weight = 400, antialias = true, extended = true })
-surface.CreateFont("ShipTech_RTSmall", { font = "Bebas Neue", size = 52, weight = 400, antialias = true, extended = true })
+surface.CreateFont("ShipTech_RTBig", { font = "BigNoodleTitling", size = 190, weight = 400, antialias = true, extended = true })
+surface.CreateFont("ShipTech_RTSmall", { font = "BigNoodleTitling", size = 52, weight = 400, antialias = true, extended = true })
 
 local function EnsureRT()
     if shieldRT then return true end

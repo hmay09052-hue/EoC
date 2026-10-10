@@ -136,13 +136,23 @@ hook.Add("PlayerSwitchWeapon", "BactaHealing", function(ply, oldWep, newWep)
     end
 end)
 
-local medicTeams = {
-    [TEAM_501MDCUBM] = true,
-    [TEAM_501MDCOFF] = true,
-    [TEAM_501KIX] = true
-}
+-- Sanitäter-Jobs: die alten Konstanten (TEAM_501MDCUBM, TEAM_501MDCOFF, TEAM_501KIX) gibt es nicht mehr,
+-- dadurch brach die Tabelle beim Laden ab ("table index is nil"). Jetzt werden die Jobs über den Namen erkannt
+-- (alle "501st Medical Platoon"-Jobs und Kix) – neue Ränge kommen automatisch dazu.
+local medicTeams
+
+local function BuildMedicTeams()
+    medicTeams = {}
+    for id, job in pairs(RPExtraTeams or {}) do
+        local name = string.lower(tostring(job.name or ""))
+        if string.find(name, "medical", 1, true) or string.find(name, "kix", 1, true) then
+            medicTeams[id] = true
+        end
+    end
+end
 
 local meta = FindMetaTable("Player")
 function meta:isMedic()
+    if not medicTeams then BuildMedicTeams() end
     return medicTeams[self:Team()] or false
 end
