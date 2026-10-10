@@ -1,0 +1,13 @@
+"VertexlitGeneric"
+{
+	$basetexture "models/helios/sw/comlink/holocom_color"
+	$bumpmap "null-bumpmap"
+
+	$selfillum 1
+	$selfillummask "models/helios/sw/comlink/holocom_illum"
+
+	$phong 1
+	$phonexponent 33
+	$phongboost 10
+	$phongfresnelranges [0.1 0.5 1.0]
+}
